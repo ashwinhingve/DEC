@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import config from './config';
 import { Mail, Lock, User, Eye, EyeOff, Github, ArrowRight } from 'lucide-react';
 // import { useSession, signIn, signOut } from "next-auth/react"
 
@@ -101,9 +102,9 @@ const AuthPage = () => {
   
     try {
       const action = isLogin ? 'login' : 'register';
-      const apiUrl = 'https://dec-azure.vercel.app/auth_api.php';
+      // const apiUrl = 'https://dec-azure.vercel.app/auth_api.php';
     
-      const response = await fetch(`${apiUrl}?action=${action}`, {
+      const response = await fetch(`${config.API_URL}?action=${action}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
