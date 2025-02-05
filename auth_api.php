@@ -3,20 +3,24 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 ini_set('log_errors', 1);
-ini_set('error_log', 'error.log');
+ini_set('error_log', 'debug.log');
 
-$allowedOrigin = 'https://dec-azure.vercel.app';
+$allowed_origins = [
+    'https://dec-azure.vercel.app',
+    'http://dec-azure.vercel.app',
+    'https://www.dec-azure.vercel.app'
+];
 
-if (isset($_SERVER['HTTP_ORIGIN'])) {
-    if ($_SERVER['HTTP_ORIGIN'] === $allowedOrigin) {
-        header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
-    }
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+
+if (in_array($origin, $allowed_origins)) {
+    header("Access-Control-Allow-Origin: $origin");
+    header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+    header("Access-Control-Allow-Headers: Content-Type, Authorization");
+    header("Access-Control-Allow-Credentials: true");
+    header("Access-Control-Max-Age: 86400"); 
 }
 
-header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
-header('Access-Control-Allow-Credentials: true');
-header('Access-Control-Max-Age: 86400'); 
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(204);
@@ -25,6 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 header('Content-Type: application/json');
 
+
 require_once 'config.php';
 
 try {
@@ -32,37 +37,23 @@ try {
         throw new Exception("Database connection not established");
     }
     
-    
-    error_log("Request Method: " . $_SERVER['REQUEST_METHOD']);
-    error_log("Origin: " . ($_SERVER['HTTP_ORIGIN'] ?? 'No origin'));
-    
-    
-    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        throw new Exception("Invalid request method");
-    }
-    
-    
     $rawInput = file_get_contents("php://input");
-    error_log("Raw input: " . $rawInput);
+    error_log("Received Raw Input: " . $rawInput);
     
     $data = json_decode($rawInput, true);
     if (json_last_error() !== JSON_ERROR_NONE) {
-        throw new Exception("Invalid JSON data");
+        throw new Exception("Invalid JSON: " . json_last_error_msg());
     }
     
     $action = $_GET['action'] ?? '';
+    error_log("Requested Action: " . $action);
     
     if ($action === 'register') {
         if (!isset($data['name']) || !isset($data['email']) || !isset($data['password'])) {
-            throw new Exception("Missing required fields: " .
-                (!isset($data['name']) ? 'name ' : '') .
-                (!isset($data['email']) ? 'email ' : '') .
-                (!isset($data['password']) ? 'password' : ''));
+            throw new Exception("Missing required fields");
         }
         
-        error_log("Attempting to register user: " . $data['email']);
-        
-        
+      
         if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
             throw new Exception("Invalid email format");
         }
@@ -76,13 +67,12 @@ try {
         $checkStmt = $conn->prepare($checkSql);
         $checkStmt->bind_param("s", $email);
         $checkStmt->execute();
-        $checkResult = $checkStmt->get_result();
-        
-        if ($checkResult->num_rows > 0) {
+        if ($checkStmt->get_result()->num_rows > 0) {
             throw new Exception("Email already registered");
         }
         $checkStmt->close();
         
+    
         $sql = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("sss", $name, $email, $password);
@@ -90,14 +80,14 @@ try {
         if ($stmt->execute()) {
             echo json_encode([
                 "success" => true,
-                "message" => "User registered successfully"
+                "message" => "Registration successful"
             ]);
         } else {
             throw new Exception("Registration failed: " . $conn->error);
         }
         $stmt->close();
     }
-    else if ($action === 'login') {
+    elseif ($action === 'login') {
         if (!isset($data['email']) || !isset($data['password'])) {
             throw new Exception("Missing email or password");
         }
