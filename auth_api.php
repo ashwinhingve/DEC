@@ -1,27 +1,25 @@
-<?php
- error_reporting(E_ALL);
+ <?php
 ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 ini_set('log_errors', 1);
-ini_set('error_log', 'api_errors.log');
+ini_set('error_log', 'error.log');
 
 header('Access-Control-Allow-Origin: https://your-nextjs-domain.vercel.app'); 
-// header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization, Accept');
+header('Access-Control-Allow-Headers: Content-Type');
+header('Content-Type: application/json');
+header('Access-Control-Allow-Credentials: true');
 header('Access-Control-Max-Age: 3600');
-
-error_log("Request Method: " . $_SERVER['REQUEST_METHOD']);
-error_log("Request Headers: " . json_encode(getallheaders()));
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(204);
     exit();
 }
 
-header('Content-Type: application/json');
-
-// require_once 'config.php';
+require_once 'config.php';
 
 try {
     if (!isset($conn)) {
@@ -93,11 +91,6 @@ try {
     }
     else {
         throw new Exception("Invalid action");
-    } else {
-        echo json_encode([
-            'status' => 'API is running',
-            'message' => 'Use POST method for registration/login'
-        ]);
     }
 } catch (Exception $e) {
     echo json_encode([
