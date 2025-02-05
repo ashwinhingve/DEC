@@ -1,4 +1,11 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+ini_set('log_errors', 1);
+ini_set('error_log', 'error.log');
+
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
@@ -15,15 +22,23 @@ try {
     if (!isset($conn)) {
         throw new Exception("Database connection not established");
     }
+    
+    error_log("Request Method: " . $_SERVER['REQUEST_METHOD']);
+    error_log("Raw input: " . file_get_contents("php://input"));
 
     $data = json_decode(file_get_contents("php://input"), true);
     $action = $_GET['action'] ?? '';
 
     if ($action === 'register') {
         if (!isset($data['name']) || !isset($data['email']) || !isset($data['password'])) {
-            throw new Exception("Missing required fields");
+            throw new Exception("Missing required fields".
+                (!isset($data['name']) ? 'name ' : '') .
+                (!isset($data['email']) ? 'email ' : '') .
+                (!isset($data['password']) ? 'password' : ''));
         }
 
+        error_log("Attempting to register user: " . $data['email']);
+        
         $name = $conn->real_escape_string($data['name']);
         $email = $conn->real_escape_string($data['email']);
         $password = password_hash($data['password'], PASSWORD_DEFAULT);
