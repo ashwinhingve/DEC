@@ -1,5 +1,5 @@
 <?php
-$host = " 193.203.184.173";
+$host = "localhost";
 $user = "u436222305_auth_db";
 $password = "Demploymentcorner@123";
 $database = "u436222305_auth_db";
