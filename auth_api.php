@@ -7,7 +7,6 @@ ini_set('log_errors', 1);
 ini_set('error_log', 'error.log');
 
 header('Access-Control-Allow-Origin: https://your-nextjs-domain.vercel.app'); 
-header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 header('Content-Type: application/json');
