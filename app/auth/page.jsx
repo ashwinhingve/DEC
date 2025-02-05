@@ -59,109 +59,38 @@ const AuthPage = () => {
   //     alert('An error occurred. Please try again.');
   //   }
   // };
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-    
-  //   // Validation rules
-  //   const validations = {
-  //     email: {
-  //       regex: /^[a-zA-Z0-9._%+-]+@gmail\.com$/,
-  //       message: 'Invalid email. Must be a valid Gmail address'
-  //     },
-  //     password: {
-  //       regex: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-  //       message: 'Password must:\n- Be at least 8 characters\n- Contain letter, number, special character'
-  //     },
-  //     name: {
-  //       minLength: 3,
-  //       maxLength: 20,
-  //       message: 'Name must be 3-20 characters long'
-  //     }
-  //   };
-  
-  //   // Email validation
-  //   if (!validations.email.regex.test(formData.email)) {
-  //     alert(validations.email.message);
-  //     return;
-  //   }
-  
-  //   // Password validation
-  //   if (!validations.password.regex.test(formData.password)) {
-  //     alert(validations.password.message);
-  //     return;
-  //   }
-  
-  //   // Name validation (only during registration)
-  //   if (!isLogin) {
-  //     const nameLength = formData.name.trim().length;
-  //     if (nameLength < validations.name.minLength || nameLength > validations.name.maxLength) {
-  //       alert(validations.name.message);
-  //       return;
-  //     }
-  //   }
-  
-  //   try {
-  //     const action = isLogin ? 'login' : 'register';
-  //     // const apiUrl = 'https://dec-azure.vercel.app/auth_api.php';
-    
-  //     const response = await fetch(`${config.API_URL}?action=${action}`, {
-  //       method: 'POST',
-  //       headers: { 'Content-Type': 'application/json' },
-  //       body: JSON.stringify(formData),
-  //     });
-  
-  //     const data = await response.json();
-      
-  //     if (data.success) {
-  //       if (isLogin) {
-  //         localStorage.setItem('user', JSON.stringify(data.user));
-  //         document.cookie = `user=${JSON.stringify(data.user)}; path=/; max-age=3600`;
-  //         window.location.href = '/profile';
-  //       } else {
-  //         alert('Registration successful! Please login.');
-  //         setIsLogin(true);
-  //       }
-  //     } else {
-  //       alert(data.message || 'An error occurred');
-  //     }
-  //   } catch (error) {
-  //     console.error('Login error:', error);
-  //     alert('Login failed');
-  //   }
-  // };
   const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  // Validation rules
-  const validations = {
-    email: {
-      regex: /^[a-zA-Z0-9._%+-]+@gmail\.com$/,
-      message: 'Invalid email. Must be a valid Gmail address'
-    },
-    password: {
-      regex: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-      message: 'Password must:\n- Be at least 8 characters\n- Contain letter, number, special character'
-    },
-    name: {
-      minLength: 3,
-      maxLength: 20,
-      message: 'Name must be 3-20 characters long'
-    }
-  };
-
-  try {
+    e.preventDefault();
+    
+    // Validation rules
+    const validations = {
+      email: {
+        regex: /^[a-zA-Z0-9._%+-]+@gmail\.com$/,
+        message: 'Invalid email. Must be a valid Gmail address'
+      },
+      password: {
+        regex: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+        message: 'Password must:\n- Be at least 8 characters\n- Contain letter, number, special character'
+      },
+      name: {
+        minLength: 3,
+        maxLength: 20,
+        message: 'Name must be 3-20 characters long'
+      }
+    };
+  
     // Email validation
     if (!validations.email.regex.test(formData.email)) {
       alert(validations.email.message);
       return;
     }
-
+  
     // Password validation
     if (!validations.password.regex.test(formData.password)) {
       alert(validations.password.message);
       return;
     }
-
+  
     // Name validation (only during registration)
     if (!isLogin) {
       const nameLength = formData.name.trim().length;
@@ -170,59 +99,46 @@ const AuthPage = () => {
         return;
       }
     }
-
-    const action = isLogin ? 'login' : 'register';
-    const apiUrl = 'https://dec-azure.vercel.app/auth_api.php';
-
-    // Log the request details
-    console.log('Sending request:', {
-      url: `${apiUrl}?action=${action}`,
-      method: 'POST',
-      body: formData
-    });
-
-    const response = await fetch(`${apiUrl}?action=${action}`, {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      mode: 'cors',
-      body: JSON.stringify(formData),
-    });
-
-    // Log the raw response
-    const responseText = await response.text();
-    console.log('Raw response:', responseText);
-
-    // Try to parse the response
-    let data;
+  
     try {
-      data = JSON.parse(responseText);
-    } catch (parseError) {
-      console.error('Failed to parse response:', parseError);
-      throw new Error('Invalid response from server');
+      const action = isLogin ? 'login' : 'register';
+      // const apiUrl = 'https://dec-azure.vercel.app/auth_api.php';
+    
+      const response = await fetch(`${config.API_URL}?action=${action}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+          credentials: 'include', // Include cookies if needed
+      mode: 'cors', // Enable CORS
+        body: JSON.stringify(formData),
+      });
+      
+   if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-
-    console.log('Parsed response:', data);
-
-    if (data.success) {
-      if (isLogin) {
-        localStorage.setItem('user', JSON.stringify(data.user));
-        document.cookie = `user=${JSON.stringify(data.user)}; path=/; max-age=3600`;
-        window.location.href = '/profile';
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        if (isLogin) {
+          // localStorage.setItem('user', JSON.stringify(data.user));
+          sessionStorage.setItem('user', JSON.stringify(data.user));
+          // document.cookie = `user=${JSON.stringify(data.user)}; path=/; max-age=3600`;
+          // window.location.href = '/profile';
+         document.cookie = `user=${JSON.stringify(data.user)}; path=/; max-age=3600; SameSite=Strict; Secure`;
+         router.push('/profile');
+        } else {
+          alert('Registration successful! Please login.');
+          setIsLogin(true);
+        }
       } else {
-        alert('Registration successful! Please login.');
-        setIsLogin(true);
+        alert(data.message || 'An error occurred');
       }
-    } else {
-      throw new Error(data.message || 'Server returned error');
+    } catch (error) {
+      console.error('Login error:', error);
+      alert(error.message || 'An error occurred while processing your request');
     }
-  } catch (error) {
-    console.error('Request failed:', error);
-    alert(`Error: ${error.message || 'An unknown error occurred'}`);
-  }
-};
+  };
+ 
   const handleChange = (e) => {
     setFormData(prev => ({
       ...prev,
