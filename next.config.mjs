@@ -9,7 +9,7 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "connect-src 'self' https://dec-azure.vercel.app",
+              "connect-src 'self' https://demploymentcorner.com https://dec-azure.vercel.app",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
               "style-src 'self' 'unsafe-inline'",
               "form-action 'self'"
@@ -17,7 +17,7 @@ const nextConfig = {
           },
           {
             key: 'Access-Control-Allow-Origin',
-            value: '*'  // In production, replace with your specific domain
+            value: '*'   
           },
           {
             key: 'Access-Control-Allow-Methods',
