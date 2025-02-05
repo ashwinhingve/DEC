@@ -101,7 +101,7 @@ const AuthPage = () => {
   
     try {
       const action = isLogin ? 'login' : 'register';
-      const apiUrl = 'http://localhost/my-app/auth_api.php';
+      const apiUrl = 'https://dec-azure.vercel.app/auth_api.php';
     
       const response = await fetch(`${apiUrl}?action=${action}`, {
         method: 'POST',
