@@ -104,7 +104,7 @@ const AuthPage = () => {
       const action = isLogin ? 'login' : 'register';
       // const apiUrl = 'https://dec-azure.vercel.app/auth_api.php';
     
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}?action=${action}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth_api.php?action=${action}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
           credentials: 'include', // Include cookies if needed
