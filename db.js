@@ -1,10 +1,10 @@
 import mysql from "mysql2/promise";
 
 const db = mysql.createPool({
-  host: "localhost",
-  user: "root", // Default XAMPP user
-  password: "", // Default XAMPP password (leave empty)
-  database: "nextauth",
+  host: "srv1740.hstgr.io",
+  user: "u436222305_auth_db", // Default XAMPP user
+  password: "Demploymentcorner@123", // Default XAMPP password (leave empty)
+  database: "u436222305_auth_db",
 });
 
 export default db;
