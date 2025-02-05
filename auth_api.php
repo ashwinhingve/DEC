@@ -5,7 +5,8 @@ ini_set('display_errors', 1);
 ini_set('log_errors', 1);
 ini_set('error_log', 'api_errors.log');
 
-header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Origin: https://your-nextjs-domain.vercel.app'); 
+// header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization, Accept');
 header('Access-Control-Max-Age: 3600');
