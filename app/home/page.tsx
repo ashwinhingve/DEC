@@ -703,11 +703,12 @@ const page = () => {
                     </label>
                     <select className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 transition">
                       <option>All Industries</option>
-                      <option>Insurance</option>
-                      <option>Finance</option>
-                      <option>Sales</option>
-                      <option>Marketing</option>
-                      <option>Field Officers</option>
+                      <option>Life Insurance</option>
+                      <option>Banking</option>
+                      <option>IT</option>
+                      <option>BPO</option>
+                      <option>Education</option>
+                      <option>Pharmaceuticals</option>
                     </select>
                   </div>
                   <div className="space-y-2">

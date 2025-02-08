@@ -1,3 +1,373 @@
+// const useResumeHandler = (formData, resumeFile) => {
+//     const [isSubmitting, setIsSubmitting] = useState(false);
+//     const [error, setError] = useState(null);
+  
+//     const validateFormData = () => {
+//       const errors = [];
+  
+//       // Validate personal information
+//       const { personal } = formData;
+//       if (!personal.fullName?.trim()) errors.push('Full name is required');
+//       if (!personal.email?.trim()) errors.push('Email is required');
+//       if (!personal.phone?.trim()) errors.push('Phone number is required');
+      
+//       // Validate email format
+//       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+//       if (personal.email && !emailRegex.test(personal.email)) {
+//         errors.push('Invalid email format');
+//       }
+  
+//       // Validate phone format
+//       const phoneRegex = /^\+?[\d\s-]{10,}$/;
+//       if (personal.phone && !phoneRegex.test(personal.phone)) {
+//         errors.push('Invalid phone number format');
+//       }
+  
+//       // Validate experience entries
+//       formData.experience.forEach((exp, index) => {
+//         if (exp.company?.trim() && (!exp.startDate || !exp.position)) {
+//           errors.push(`Experience ${index + 1}: Start date and position are required`);
+//         }
+//       });
+  
+//       // Validate education entries
+//       formData.education.forEach((edu, index) => {
+//         if (edu.school?.trim() && (!edu.degree || !edu.graduationDate)) {
+//           errors.push(`Education ${index + 1}: Degree and graduation date are required`);
+//         }
+//       });
+  
+//       // Validate skills
+//       if (formData.skills.every(skill => !skill.trim())) {
+//         errors.push('At least one skill is required');
+//       }
+  
+//       return errors;
+//     };
+  
+//     const formatDate = (dateString) => {
+//       if (!dateString) return '';
+//       const date = new Date(dateString);
+//       return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+//     };
+  
+//     const generatePDF = async () => {
+//       const doc = new jsPDF();
+//       const margin = 20;
+//       let yPosition = margin;
+  
+//       // Set fonts
+//       doc.setFont('helvetica', 'bold');
+//       doc.setFontSize(20);
+  
+//       // Add personal information
+//       doc.text(formData.personal.fullName, margin, yPosition);
+//       doc.setFont('helvetica', 'normal');
+//       doc.setFontSize(10);
+//       yPosition += 10;
+//       doc.text([
+//         formData.personal.email,
+//         formData.personal.phone,
+//         formData.personal.website,
+//       ].filter(Boolean).join(' | '), margin, yPosition);
+  
+//       // Add summary
+//       if (formData.personal.summary) {
+//         yPosition += 15;
+//         doc.setFont('helvetica', 'bold');
+//         doc.setFontSize(12);
+//         doc.text('Professional Summary', margin, yPosition);
+//         doc.setFont('helvetica', 'normal');
+//         doc.setFontSize(10);
+//         yPosition += 10;
+//         doc.text(doc.splitTextToSize(formData.personal.summary, 170), margin, yPosition);
+//       }
+  
+//       // Add experience
+//       if (formData.experience.length > 0) {
+//         yPosition += 15;
+//         doc.setFont('helvetica', 'bold');
+//         doc.setFontSize(12);
+//         doc.text('Experience', margin, yPosition);
+        
+//         formData.experience.forEach(exp => {
+//           if (exp.company) {
+//             yPosition += 10;
+//             doc.setFont('helvetica', 'bold');
+//             doc.setFontSize(11);
+//             doc.text(`${exp.position} at ${exp.company}`, margin, yPosition);
+//             doc.setFont('helvetica', 'normal');
+//             doc.setFontSize(10);
+//             yPosition += 5;
+//             doc.text(
+//               `${formatDate(exp.startDate)} - ${exp.endDate ? formatDate(exp.endDate) : 'Present'}`,
+//               margin,
+//               yPosition
+//             );
+//             if (exp.description) {
+//               yPosition += 5;
+//               doc.text(doc.splitTextToSize(exp.description, 170), margin, yPosition);
+//             }
+//           }
+//         });
+//       }
+  
+//       // Add education
+//       if (formData.education.length > 0) {
+//         yPosition += 15;
+//         doc.setFont('helvetica', 'bold');
+//         doc.setFontSize(12);
+//         doc.text('Education', margin, yPosition);
+        
+//         formData.education.forEach(edu => {
+//           if (edu.school) {
+//             yPosition += 10;
+//             doc.setFont('helvetica', 'bold');
+//             doc.setFontSize(11);
+//             doc.text(edu.school, margin, yPosition);
+//             doc.setFont('helvetica', 'normal');
+//             doc.setFontSize(10);
+//             yPosition += 5;
+//             doc.text(
+//               `${edu.degree}${edu.field ? ` in ${edu.field}` : ''} - ${formatDate(edu.graduationDate)}`,
+//               margin,
+//               yPosition
+//             );
+//           }
+//         });
+//       }
+  
+//       // Add skills
+//       const validSkills = formData.skills.filter(skill => skill.trim());
+//       if (validSkills.length > 0) {
+//         yPosition += 15;
+//         doc.setFont('helvetica', 'bold');
+//         doc.setFontSize(12);
+//         doc.text('Skills', margin, yPosition);
+//         yPosition += 5;
+//         doc.setFont('helvetica', 'normal');
+//         doc.setFontSize(10);
+//         doc.text(validSkills.join(' • '), margin, yPosition);
+//       }
+  
+//       return doc;
+//     };
+  
+//     const handleSaveResume = async () => {
+//       try {
+//         setIsSubmitting(true);
+//         setError(null);
+  
+//         // Validate form data
+//         const validationErrors = validateFormData();
+//         if (validationErrors.length > 0) {
+//           throw new Error(validationErrors.join('\n'));
+//         }
+  
+//         if (resumeFile) {
+//           // Handle uploaded resume file
+//           // You can implement file handling logic here
+//           const downloadLink = URL.createObjectURL(resumeFile);
+//           window.open(downloadLink);
+//         } else {
+//           // Generate PDF from form data
+//           const doc = await generatePDF();
+//           doc.save(`${formData.personal.fullName.replace(/\s+/g, '_')}_resume.pdf`);
+//         }
+  
+//         // Optional: Save to backend
+//         // await saveResumeToBackend(formData);
+  
+//       } catch (err) {
+//         setError(err.message);
+//       } finally {
+//         setIsSubmitting(false);
+//       }
+//     };
+  
+//     return {
+//       handleSaveResume,
+//       isSubmitting,
+//       error
+//     };
+//   };
+
+
+
+
+//   {/* Contact Form Section */}
+//   <div className="min-h-screen">
+//   <motion.section
+//     initial={{ opacity: 0 }}
+//     animate={{ opacity: 1 }}
+//     transition={{ duration: 0.6 }}
+//     className="py-24 bg-gradient-to-r from-blue-50 to-indigo-50"
+//   >
+//     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+//       <div className="grid lg:grid-cols-2 gap-8 items-center">
+//         {/* Left Section */}
+//         <motion.div
+//           initial={{ x: -50 }}
+//           animate={{ x: 0 }}
+//           transition={{ duration: 0.6 }}
+//           className="relative"
+//         >
+//           <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+//             {/* <Image
+//               src="/first/contact-banner.jpg"
+//               alt="Contact Us"
+//               width={600}
+//               height={800}
+//               className="w-full h-96 object-cover"
+//             /> */}
+//             <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60" />
+//             <h1 className="absolute top-8 left-8 text-5xl font-bold text-white">
+//               Contact Us
+//             </h1>
+//             <div className="absolute bottom-0 w-full p-8">
+//               <div className="bg-white/95 backdrop-blur-sm rounded-xl p-6 space-y-4">
+//                 <a
+//                   href="tel:470-601-1911"
+//                   className="flex items-center group"
+//                 >
+//                   <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center group-hover:bg-indigo-200 transition-colors">
+//                     <FaPhone className="text-indigo-600" />
+//                   </div>
+//                   <span className="ml-4 text-gray-800">+(91) 7722965066</span>
+//                 </a>
+//                 <a
+//                   href="https://demploymentcorner.com"
+//                   className="flex items-center group"
+//                 >
+//                   <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center group-hover:bg-indigo-200 transition-colors">
+//                     <FaGlobe className="text-indigo-600" />
+//                   </div>
+//                   <span className="ml-4 text-gray-800">
+//                     demploymentcorner.com
+//                   </span>
+//                 </a>
+//                 <div className="flex items-center group">
+//                   <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
+//                     <FaMapMarkerAlt className="text-indigo-600" />
+//                   </div>
+//                   <span className="ml-4 text-gray-800">All India</span>
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+//         </motion.div>
+
+//         {/* Right Section - Form */}
+//         <motion.div
+//           initial={{ x: 50 }}
+//           animate={{ x: 0 }}
+//           transition={{ duration: 0.6 }}
+//           className="bg-white p-8 rounded-2xl shadow-xl"
+//         >
+//           <h2 className="text-5xl font-bold text-center mb-8 bg-clip-text text-slate-900">
+//             SEND US A MESSAGE
+//           </h2>
+//           <form className="space-y-6">
+//             <motion.div
+//               whileHover={{ scale: 1.01 }}
+//               className="space-y-4"
+//             >
+//               <input
+//                 type="text"
+//                 placeholder="Name"
+//                 className="w-full px-6 py-3 rounded-full border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-shadow"
+//               />
+//               <input
+//                 type="email"
+//                 placeholder="Email"
+//                 className="w-full px-6 py-3 rounded-full border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-shadow"
+//               />
+//               <input
+//                 type="tel"
+//                 placeholder="Phone"
+//                 className="w-full px-6 py-3 rounded-full border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-shadow"
+//               />
+//             </motion.div>
+
+//             <div className="space-y-4">
+//               <p className="text-gray-600">
+//                 Preferred Method of Communication
+//               </p>
+//               <div className="flex justify-center space-x-8">
+//                 <label className="flex items-center space-x-2 cursor-pointer">
+//                   <div className="relative">
+//                     <input
+//                       type="radio"
+//                       name="contact"
+//                       value="email"
+//                       className="hidden"
+//                       onChange={(e) =>
+//                         setPreferredContact(e.target.value)
+//                       }
+//                     />
+//                     <div
+//                       className={`w-5 h-5 border-2 rounded-full ${preferredContact === "email"
+//                         ? "border-indigo-600"
+//                         : "border-gray-300"
+//                         }`}
+//                     >
+//                       {preferredContact === "email" && (
+//                         <div className="absolute inset-1 bg-indigo-600 rounded-full" />
+//                       )}
+//                     </div>
+//                   </div>
+//                   <span>Email</span>
+//                 </label>
+//                 <label className="flex items-center space-x-2 cursor-pointer">
+//                   <div className="relative">
+//                     <input
+//                       type="radio"
+//                       name="contact"
+//                       value="phone"
+//                       className="hidden"
+//                       onChange={(e) =>
+//                         setPreferredContact(e.target.value)
+//                       }
+//                     />
+//                     <div
+//                       className={`w-5 h-5 border-2 rounded-full ${preferredContact === "phone"
+//                         ? "border-indigo-600"
+//                         : "border-gray-300"
+//                         }`}
+//                     >
+//                       {preferredContact === "phone" && (
+//                         <div className="absolute inset-1 bg-indigo-600 rounded-full" />
+//                       )}
+//                     </div>
+//                   </div>
+//                   <span>Phone</span>
+//                 </label>
+//               </div>
+//             </div>
+
+//             <textarea
+//               placeholder="Message"
+//               rows={4}
+//               className="w-full px-6 py-4 rounded-3xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-shadow"
+//             />
+
+//             <motion.button
+//               whileHover={{ scale: 1.02 }}
+//               whileTap={{ scale: 0.98 }}
+//               type="submit"
+//               className="w-full py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+//             >
+//               Send Message
+//             </motion.button>
+//           </form>
+//         </motion.div>
+//       </div>
+//     </div>
+//   </motion.section>
+// </div>
+
+
+
 
 // <section className="relative overflow-hidden bg-teal-900 py-24">
 //       {/* Background Pattern */}

@@ -1,9 +1,11 @@
 'use client'
 
 
-
-import React, { useState } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
+import { useRouter } from 'next/navigation';
+import React, { useState ,useEffect } from 'react';
 import { motion } from 'framer-motion';
+import toast from 'react-hot-toast';
 import {
   BarChart, Users, Briefcase, Bell, Search,
   Menu, ChevronDown, MessageSquare
@@ -22,11 +24,7 @@ import {
   Save, FileCheck, Calendar, Heart, Award, ThumbsUp, CheckSquare
   , X
 } from 'lucide-react';
-// const CustomCard = ({ children, className = '' }) => (
-//   <div className={`bg-white rounded-lg shadow-md p-6 ${className}`}>
-//     {children}
-//   </div>
-// );
+
 const BaseCard = ({ className, children }) => (
   <div className={`bg-white rounded-lg shadow ${className || ''}`}>
     {children}
@@ -47,11 +45,108 @@ const StatsCard = ({ title, value, change, icon: Icon }) => (
     <p className="text-2xl font-bold">{value}</p>
   </BaseCard>
 );
+
 const AdminDashboard = () => {
+  const emptyJobTemplate = {
+    id: Date.now(),
+    title: '',
+    company: '',
+    location: '',
+    state: '',
+    type: '',
+    salary: '',
+    department: '',
+    posted: 'Just now',
+    description: '',
+    skills: [],
+    education: '',
+    experience: '',
+    industry: '',
+    occupation: '',
+    benefits: []
+  };
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [editingJob, setEditingJob] = useState(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
+  const [jobs, setJobs] = useState([]);
+  const [newJob, setNewJob] = useState({
+    id: Date.now(),
+    title: '',
+    company: '',
+    location: '',
+    state: '',
+    type: '',
+    salary: '',
+    department: '',
+    posted: 'Just now',
+    description: '',
+    skills: [],
+    education: '',
+    experience: '',
+    industry: '',
+    occupation: '',
+    benefits: []
+  });
+
+  const { isAuthenticated, user } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchAndValidate = async () => {
+      // Authentication checks
+      if (!isAuthenticated) {
+        router.push('/auth');
+        return;
+      }
+
+      if (user?.role !== 'admin') {
+        toast.error('Unauthorized access');
+        router.push('/profile');
+        return;
+      }
+
+      // Job fetching logic
+      try {
+        const response = await fetch('/api/jobs');
+        // console.log('Response:', await response.text());
+        const data = await response.json();
+        setJobs(data);
+      } catch (error) {
+        console.error('Failed to fetch jobs:', error);
+        toast.error('Failed to load jobs');
+      }
+    };
+
+    fetchAndValidate();
+  }, [isAuthenticated, user, router]);
+
+  if (!isAuthenticated || user?.role !== 'admin') {
+    return null;
+  }
+  
+  // const emptyJobTemplate = {
+  //   id: Date.now(),
+  //   title: '',
+  //   company: '',
+  //   location: '',
+  //   state: '',
+  //   type: '',
+  //   salary: '',
+  //   department: '',
+  //   posted: 'Just now',
+  //   description: '',
+  //   skills: [],
+  //   education: '',
+  //   experience: '',
+  //   industry: '',
+  //   occupation: '',
+  //   benefits: []
+  // };
+
+  // const [newJob, setNewJob] = useState(emptyJobTemplate);
+  
 
   const stats = [
     {
@@ -104,31 +199,6 @@ const AdminDashboard = () => {
     }
   ];
 
-  const [jobs, setJobs] = useState([
-    // ... your existing jobs data
-  ]);
- 
-
-  const emptyJobTemplate = {
-    id: Date.now(),
-    title: '',
-    company: '',
-    location: '',
-    state: '',
-    type: '',
-    salary: '',
-    department: '',
-    posted: 'Just now',
-    description: '',
-    skills: [],
-    education: '',
-    experience: '',
-    industry: '',
-    occupation: '',
-    benefits: []
-  };
-
-  const [newJob, setNewJob] = useState(emptyJobTemplate);
 
   // Filter options (reuse from your jobs page)
   const filterOptions = {
@@ -155,27 +225,117 @@ const AdminDashboard = () => {
     ]
   };
 
+
+  const fetchJobs = async () => {
+    try {
+      const response = await fetch('/api/jobs');
+      if (!response.ok) {
+        throw new Error('Failed to fetch jobs');
+      }
+      const data = await response.json();
+      setJobs(data);
+    } catch (error) {
+      console.error('Failed to fetch jobs:', error);
+      toast.error('Failed to load jobs');
+    }
+  };
+  // const handleSave = async (jobData) => {
+  //   try {
+  //     const response = await fetch('/api/jobs', {
+  //       method: jobData._id ? 'PUT' : 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify(jobData),
+  //     });
+      
+  //     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      
+  //     const result = await response.json();
+  //     setJobs(jobData._id 
+  //       ? jobs.map(j => j._id === result._id ? result : j)
+  //       : [...jobs, result]
+  //     );
+  //     setIsAddingNew(false);
+  //     setEditingJob(null);
+  //   } catch (error) {
+  //     console.error('Failed to save job:', error);
+  //     toast.error('Failed to save job');
+  //   }
+  // };
+  const handleSave = async (jobData) => {
+    try {
+      const url = jobData._id 
+        ? `/api/jobs/${jobData._id}` 
+        : '/api/jobs';
+      const method = jobData._id ? 'PUT' : 'POST';
+      
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jobData),
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      const result = await response.json();
+      
+      if (method === 'POST') {
+        setJobs([...jobs, result]);
+      } else {
+        setJobs(jobs.map(j => j._id === result._id ? result : j));
+      }
+  
+      setIsAddingNew(false);
+      setEditingJob(null);
+      toast.success(jobData._id ? 'Job updated successfully' : 'Job added successfully');
+    } catch (error) {
+      console.error('Failed to save job:', error);
+      toast.error('Failed to save job');
+    }
+  };
+  const handleDelete = async (jobId) => {
+    try {
+      const response = await fetch(`/api/jobs/${jobId}`, {
+        method: 'DELETE',
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      // Remove the deleted job from the state
+      setJobs(jobs.filter(job => job._id !== jobId));
+      toast.success('Job deleted successfully');
+    } catch (error) {
+      console.error('Failed to delete job:', error);
+      toast.error('Failed to delete job');
+    }
+  };
+
   const handleEdit = (job) => {
     setEditingJob(job);
     setIsAddingNew(false);
   };
 
-  const handleDelete = (jobId) => {
-    if (window.confirm('Are you sure you want to delete this job?')) {
-      setJobs(jobs.filter(job => job.id !== jobId));
-    }
-  };
+  // const handleDeletes = (jobId) => {
+  //   if (window.confirm('Are you sure you want to delete this job?')) {
+  //     setJobs(jobs.filter(job => job._id !== jobId));
+  //   }
+  // };
 
-  const handleSave = (job) => {
-    if (isAddingNew) {
-      setJobs([...jobs, job]);
-      setIsAddingNew(false);
-      setNewJob(emptyJobTemplate);
-    } else {
-      setJobs(jobs.map(j => j.id === job.id ? job : j));
-      setEditingJob(null);
-    }
-  };
+  // const handleSaveExtra = (job) => {
+  //   if (isAddingNew) {
+  //     setJobs([...jobs, job]);
+  //     setIsAddingNew(false);
+  //     setNewJob(emptyJobTemplate);
+  //   } else {
+  //     setJobs(jobs.map(j => j.id === job._id ? job : j));
+  //     setEditingJob(null);
+  //   }
+  // };
 
   const handleCancel = () => {
     setEditingJob(null);
@@ -476,6 +636,10 @@ const AdminDashboard = () => {
                 <JobForm
                   job={isAddingNew ? newJob : editingJob}
                   onSave={handleSave}
+                  // onSave={(data) => {
+                  //   handleSave(data);
+                  //   handleSaveExtra(data);
+                  // }}
                   onCancel={handleCancel}
                 />
               )}
@@ -489,7 +653,7 @@ const AdminDashboard = () => {
                   )
                   .map(job => (
                     <motion.div
-                      key={job.id}
+                      key={job._id}
                       layout
                       className="bg-white rounded-lg shadow-sm p-6"
                     >
@@ -506,7 +670,7 @@ const AdminDashboard = () => {
                             <Pencil className="w-5 h-5" />
                           </button>
                           <button
-                            onClick={() => handleDelete(job.id)}
+                            onClick={() => handleDelete(job._id) }
                             className="p-2 text-gray-400 hover:text-red-600"
                           >
                             <Trash2 className="w-5 h-5" />
