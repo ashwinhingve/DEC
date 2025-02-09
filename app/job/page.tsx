@@ -1,11 +1,11 @@
 
 
 'use client';
-import React, { useState } from 'react';
+import React, { useState ,useEffect } from 'react';
+import { Job } from '../../types/job'
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   MapPin,
-  Clock,
   Briefcase,
   Search,
   Filter,
@@ -15,28 +15,43 @@ import {
   Star,
   Building,
   IndianRupee,
-  Code, X
+   X
 } from 'lucide-react';
 
-interface Job {
-  id: number;
-  title: string;
-  company: string;
-  location: string;
-  state: string;
-  type: string;
-  salary: string;
-  department: string;
-  posted: string;
-  description: string;
-  skills: string[];
-  education: string;
-  experience: string;
-  industry: string;
-  occupation: string;
-  benefits: string[];
-}
-
+// interface Job {
+//   id: number;
+//   title: string;
+//   company: string;
+//   location: string;
+//   state: string;
+//   type: string;
+//   salary: string;
+//   department: string;
+//   posted: string;
+//   description: string;
+//   skills: string[];
+//   education: string;
+//   experience: string;
+//   industry: string;
+//   occupation: string;
+//   benefits: string[];
+// }
+// async function getJobs() {
+//   try {
+//     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/jobs`, {
+//       cache: 'no-store'
+//     })
+    
+//     if (!res.ok) {
+//       throw new Error('Failed to fetch jobs')
+//     }
+    
+//     return res.json()
+//   } catch (error) {
+//     console.error('Error:', error)
+//     return []
+//   }
+// }
 interface JobDetailsPopoverProps {
   isOpen: boolean;
   onClose: () => void;
@@ -181,13 +196,13 @@ const JobDetailsPopover: React.FC<JobDetailsPopoverProps> = ({ isOpen, onClose, 
 };
 
 
-const JobsPage: React.FC = () => {
-
+const  JobsPage: React.FC = () => {
+   
   const [showDetails, setShowDetails] = useState(false);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [filters, setFilters] = useState<FilterState>(initialFilterState);
   const [searchQuery, setSearchQuery] = useState('');
-
+  const [jobs, setJobs] = useState<Job[]>([]);
   // const [filters, setFilters] = useState<FilterState>({
   //   location: '',
   //   state: '',
@@ -202,6 +217,24 @@ const JobsPage: React.FC = () => {
   //   occupation: '',
   //   industry: ''
   // });
+  const fetchJobs = async () => {
+    try {
+      const res = await fetch('/api/jobs');
+      if (!res.ok) {
+        throw new Error('Failed to fetch jobs');
+      }
+      const data = await res.json();
+      setJobs(data);
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchJobs();
+  }, []);
+
+
    const handleViewDetails = (job:Job) => {
     setSelectedJob(job);
     setShowDetails(true);
@@ -253,8 +286,9 @@ const JobsPage: React.FC = () => {
     ],
     type: ["Full-time", "Part-time", "Contract", "Internship", "Remote"],
     department: [
-      "Engineering", "Design", "Product", "Marketing", "Sales",
-      "HR", "Finance", "Operations", "Customer Support", "Research"
+      "ABP CHANNELS", "AGENCY CHANNEL", "DIRECT CHANNEL", "NPS CHENNAL", "DIRECT BCSS CHANNEL",
+      "DIRECT LOYALTY CHANNEL", "DEFENCE CHANNEL", "BANCA CHANNEL", "BANCA OTHER", "BROCA CHANNEL", "VRM CHANNEL",
+       "CREDIT LIFE CHANNEL", "TELE VERTICAL CHANNEL", "BANCA NBFC CHANNEL", "BANCA SFB CHANNEL", "BANCA ALLIANCE", "SMART ACHIVEVER", "FLS PROFILE", "NFLS PROFILE"
     ],
     salary: [
       "Below 3 LPA", "3-6 LPA", "6-10 LPA", "10-15 LPA",
@@ -273,198 +307,198 @@ const JobsPage: React.FC = () => {
       "7-10 years", "10+ years"
     ],
     industry: [
-      "Technology", "Healthcare", "Finance", "Education",
-      "E-commerce", "Manufacturing", "Consulting", "Media"
+      "Life Insurance", "Banking", "IT", "BPO",
+      "Education", "Pharmaceuticals"
     ],
     occupation: [
-      "Software Developer", "Product Manager", "Data Scientist",
-      "UI/UX Designer", "DevOps Engineer", "System Architect"
+      "SALES DEPARTMENT MANAGER", "BUSINESS DEVELOPMENT MANAGER", "ASSISTANT SALES MANAGER",
+      "SALES MANAGER", "SR. SALES MANAGER", "ASSOCIATE AREA BUSINESS MANAGER","SR. AREA BUSINESS MANAGER","RELATIONSHIP MANAGER"
     ]
   };
 
   // Sample jobs data
-  const jobs = [
-    {
-      id: 1,
-      title: "Senior Frontend Developer",
-      company: "Tech Solutions Inc.",
-      location: "Mumbai",
-      state: "Maharashtra",
-      type: "Full-time",
-      salary: "15-25 LPA",
-      department: "Engineering",
-      posted: "2 days ago",
-      description: "We're looking for an experienced frontend developer with expertise in React and modern web technologies.",
-      skills: ["React", "TypeScript", "Node.js", "AWS"],
-      education: "B.Tech",
-      experience: "5-7 years",
-      industry: "Technology",
-      occupation: "Software Developer",
-      benefits: ["Health Insurance", "Stock Options", "Remote Work"]
-    },
-    {
-      id: 2,
-      title: "Machine Learning Engineer",
-      company: "AI Innovations",
-      location: "Bangalore",
-      state: "Karnataka",
-      type: "Full-time",
-      salary: "25-50 LPA",
-      department: "Research",
-      posted: "1 week ago",
-      description: "Looking for an ML engineer to work on cutting-edge AI solutions.",
-      skills: ["Python", "Machine Learning", "TensorFlow"],
-      education: "M.Tech",
-      experience: "3-5 years",
-      industry: "Technology",
-      occupation: "Data Scientist",
-      benefits: ["Flexible Hours", "Health Coverage", "Learning Budget"]
-    },
-    {
-      id: 3,
-      title: "UX/UI Designer",
-      company: "Creative Digital Studios",
-      location: "Pune",
-      state: "Maharashtra",
-      type: "Full-time",
-      salary: "10-15 LPA",
-      department: "Design",
-      posted: "3 days ago",
-      description: "Join our design team to create beautiful and intuitive user experiences for our digital products.",
-      skills: ["Figma", "Adobe XD", "UI Design", "User Research"],
-      education: "Bachelor's in Design",
-      experience: "3-5 years",
-      industry: "Technology",
-      occupation: "UI/UX Designer",
-      benefits: ["Work From Home", "Healthcare", "Gym Membership"]
-    },
-    {
-      id: 4,
-      title: "DevOps Engineer",
-      company: "Cloud Systems Ltd",
-      location: "Hyderabad",
-      state: "Telangana",
-      type: "Full-time",
-      salary: "20-35 LPA",
-      department: "Engineering",
-      posted: "5 days ago",
-      description: "Seeking a DevOps engineer to streamline our deployment processes and manage cloud infrastructure.",
-      skills: ["AWS", "Docker", "Kubernetes", "Jenkins", "Terraform"],
-      education: "B.Tech/M.Tech",
-      experience: "4-6 years",
-      industry: "Technology",
-      occupation: "DevOps Engineer",
-      benefits: ["Remote Work", "Stock Options", "Health Insurance", "Learning Allowance"]
-    },
-    {
-      id: 5,
-      title: "Product Manager",
-      company: "Innovate Tech",
-      location: "Delhi",
-      state: "Delhi",
-      type: "Full-time",
-      salary: "18-30 LPA",
-      department: "Product",
-      posted: "1 week ago",
-      description: "Looking for a product manager to lead our flagship product development and strategy.",
-      skills: ["Product Strategy", "Agile", "Data Analysis", "User Stories"],
-      education: "MBA/B.Tech",
-      experience: "5-8 years",
-      industry: "Technology",
-      occupation: "Product Manager",
-      benefits: ["Health Insurance", "Performance Bonus", "Flexible Hours"]
-    },
-    {
-      id: 6,
-      title: "Backend Developer",
-      company: "FinTech Solutions",
-      location: "Chennai",
-      state: "Tamil Nadu",
-      type: "Full-time",
-      salary: "12-20 LPA",
-      department: "Engineering",
-      posted: "4 days ago",
-      description: "Join our backend team to build scalable and secure financial applications.",
-      skills: ["Java", "Spring Boot", "MySQL", "Redis", "Microservices"],
-      education: "B.Tech",
-      experience: "2-5 years",
-      industry: "Finance",
-      occupation: "Software Developer",
-      benefits: ["Medical Insurance", "Annual Bonus", "Skill Development"]
-    },
-    {
-      id: 7,
-      title: "Data Analyst",
-      company: "Analytics Hub",
-      location: "Kolkata",
-      state: "West Bengal",
-      type: "Full-time",
-      salary: "8-15 LPA",
-      department: "Analytics",
-      posted: "2 weeks ago",
-      description: "Seeking a data analyst to derive insights from our vast dataset and create meaningful visualizations.",
-      skills: ["Python", "SQL", "Tableau", "Excel", "Statistics"],
-      education: "B.Tech/M.Sc",
-      experience: "2-4 years",
-      industry: "Consulting",
-      occupation: "Data Analyst",
-      benefits: ["Healthcare", "Performance Bonus", "Work From Home"]
-    },
-    {
-      id: 8,
-      title: "Full Stack Developer",
-      company: "E-commerce Pro",
-      location: "Ahmedabad",
-      state: "Gujarat",
-      type: "Full-time",
-      salary: "10-18 LPA",
-      department: "Engineering",
-      posted: "6 days ago",
-      description: "Looking for a full stack developer to work on our e-commerce platform.",
-      skills: ["React", "Node.js", "MongoDB", "Express", "Redux"],
-      education: "B.Tech",
-      experience: "3-6 years",
-      industry: "E-commerce",
-      occupation: "Software Developer",
-      benefits: ["Health Insurance", "Stock Options", "Flexible Timing"]
-    },
-    {
-      id: 9,
-      title: "Digital Marketing Manager",
-      company: "Growth Marketing Inc",
-      location: "Bangalore",
-      state: "Karnataka",
-      type: "Full-time",
-      salary: "12-18 LPA",
-      department: "Marketing",
-      posted: "1 week ago",
-      description: "Seeking an experienced digital marketing manager to lead our online marketing initiatives.",
-      skills: ["SEO", "Google Analytics", "Social Media Marketing", "Content Strategy"],
-      education: "MBA/Master's in Marketing",
-      experience: "4-7 years",
-      industry: "Marketing",
-      occupation: "Marketing Manager",
-      benefits: ["Healthcare", "Performance Incentives", "Remote Work"]
-    },
-    {
-      id: 10,
-      title: "Cloud Architect",
-      company: "CloudTech Solutions",
-      location: "Mumbai",
-      state: "Maharashtra",
-      type: "Full-time",
-      salary: "30-50 LPA",
-      department: "Engineering",
-      posted: "3 days ago",
-      description: "Looking for an experienced cloud architect to design and implement cloud-native solutions.",
-      skills: ["AWS", "Azure", "Cloud Architecture", "Microservices", "Security"],
-      education: "B.Tech/M.Tech",
-      experience: "8-12 years",
-      industry: "Technology",
-      occupation: "Cloud Architect",
-      benefits: ["Health Insurance", "Stock Options", "Remote Work", "Learning Budget"]
-    }
-  ];
+  // const jobs = [
+  //   {
+  //     id: 1,
+  //     title: "Senior Frontend Developer",
+  //     company: "Tech Solutions Inc.",
+  //     location: "Mumbai",
+  //     state: "Maharashtra",
+  //     type: "Full-time",
+  //     salary: "15-25 LPA",
+  //     department: "Engineering",
+  //     posted: "2 days ago",
+  //     description: "We're looking for an experienced frontend developer with expertise in React and modern web technologies.",
+  //     skills: ["React", "TypeScript", "Node.js", "AWS"],
+  //     education: "B.Tech",
+  //     experience: "5-7 years",
+  //     industry: "Technology",
+  //     occupation: "Software Developer",
+  //     benefits: ["Health Insurance", "Stock Options", "Remote Work"]
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Machine Learning Engineer",
+  //     company: "AI Innovations",
+  //     location: "Bangalore",
+  //     state: "Karnataka",
+  //     type: "Full-time",
+  //     salary: "25-50 LPA",
+  //     department: "Research",
+  //     posted: "1 week ago",
+  //     description: "Looking for an ML engineer to work on cutting-edge AI solutions.",
+  //     skills: ["Python", "Machine Learning", "TensorFlow"],
+  //     education: "M.Tech",
+  //     experience: "3-5 years",
+  //     industry: "Technology",
+  //     occupation: "Data Scientist",
+  //     benefits: ["Flexible Hours", "Health Coverage", "Learning Budget"]
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "UX/UI Designer",
+  //     company: "Creative Digital Studios",
+  //     location: "Pune",
+  //     state: "Maharashtra",
+  //     type: "Full-time",
+  //     salary: "10-15 LPA",
+  //     department: "Design",
+  //     posted: "3 days ago",
+  //     description: "Join our design team to create beautiful and intuitive user experiences for our digital products.",
+  //     skills: ["Figma", "Adobe XD", "UI Design", "User Research"],
+  //     education: "Bachelor's in Design",
+  //     experience: "3-5 years",
+  //     industry: "Technology",
+  //     occupation: "UI/UX Designer",
+  //     benefits: ["Work From Home", "Healthcare", "Gym Membership"]
+  //   },
+  //   {
+  //     id: 4,
+  //     title: "DevOps Engineer",
+  //     company: "Cloud Systems Ltd",
+  //     location: "Hyderabad",
+  //     state: "Telangana",
+  //     type: "Full-time",
+  //     salary: "20-35 LPA",
+  //     department: "Engineering",
+  //     posted: "5 days ago",
+  //     description: "Seeking a DevOps engineer to streamline our deployment processes and manage cloud infrastructure.",
+  //     skills: ["AWS", "Docker", "Kubernetes", "Jenkins", "Terraform"],
+  //     education: "B.Tech/M.Tech",
+  //     experience: "4-6 years",
+  //     industry: "Technology",
+  //     occupation: "DevOps Engineer",
+  //     benefits: ["Remote Work", "Stock Options", "Health Insurance", "Learning Allowance"]
+  //   },
+  //   {
+  //     id: 5,
+  //     title: "Product Manager",
+  //     company: "Innovate Tech",
+  //     location: "Delhi",
+  //     state: "Delhi",
+  //     type: "Full-time",
+  //     salary: "18-30 LPA",
+  //     department: "Product",
+  //     posted: "1 week ago",
+  //     description: "Looking for a product manager to lead our flagship product development and strategy.",
+  //     skills: ["Product Strategy", "Agile", "Data Analysis", "User Stories"],
+  //     education: "MBA/B.Tech",
+  //     experience: "5-8 years",
+  //     industry: "Technology",
+  //     occupation: "Product Manager",
+  //     benefits: ["Health Insurance", "Performance Bonus", "Flexible Hours"]
+  //   },
+  //   {
+  //     id: 6,
+  //     title: "Backend Developer",
+  //     company: "FinTech Solutions",
+  //     location: "Chennai",
+  //     state: "Tamil Nadu",
+  //     type: "Full-time",
+  //     salary: "12-20 LPA",
+  //     department: "Engineering",
+  //     posted: "4 days ago",
+  //     description: "Join our backend team to build scalable and secure financial applications.",
+  //     skills: ["Java", "Spring Boot", "MySQL", "Redis", "Microservices"],
+  //     education: "B.Tech",
+  //     experience: "2-5 years",
+  //     industry: "Finance",
+  //     occupation: "Software Developer",
+  //     benefits: ["Medical Insurance", "Annual Bonus", "Skill Development"]
+  //   },
+  //   {
+  //     id: 7,
+  //     title: "Data Analyst",
+  //     company: "Analytics Hub",
+  //     location: "Kolkata",
+  //     state: "West Bengal",
+  //     type: "Full-time",
+  //     salary: "8-15 LPA",
+  //     department: "Analytics",
+  //     posted: "2 weeks ago",
+  //     description: "Seeking a data analyst to derive insights from our vast dataset and create meaningful visualizations.",
+  //     skills: ["Python", "SQL", "Tableau", "Excel", "Statistics"],
+  //     education: "B.Tech/M.Sc",
+  //     experience: "2-4 years",
+  //     industry: "Consulting",
+  //     occupation: "Data Analyst",
+  //     benefits: ["Healthcare", "Performance Bonus", "Work From Home"]
+  //   },
+  //   {
+  //     id: 8,
+  //     title: "Full Stack Developer",
+  //     company: "E-commerce Pro",
+  //     location: "Ahmedabad",
+  //     state: "Gujarat",
+  //     type: "Full-time",
+  //     salary: "10-18 LPA",
+  //     department: "Engineering",
+  //     posted: "6 days ago",
+  //     description: "Looking for a full stack developer to work on our e-commerce platform.",
+  //     skills: ["React", "Node.js", "MongoDB", "Express", "Redux"],
+  //     education: "B.Tech",
+  //     experience: "3-6 years",
+  //     industry: "E-commerce",
+  //     occupation: "Software Developer",
+  //     benefits: ["Health Insurance", "Stock Options", "Flexible Timing"]
+  //   },
+  //   {
+  //     id: 9,
+  //     title: "Digital Marketing Manager",
+  //     company: "Growth Marketing Inc",
+  //     location: "Bangalore",
+  //     state: "Karnataka",
+  //     type: "Full-time",
+  //     salary: "12-18 LPA",
+  //     department: "Marketing",
+  //     posted: "1 week ago",
+  //     description: "Seeking an experienced digital marketing manager to lead our online marketing initiatives.",
+  //     skills: ["SEO", "Google Analytics", "Social Media Marketing", "Content Strategy"],
+  //     education: "MBA/Master's in Marketing",
+  //     experience: "4-7 years",
+  //     industry: "Marketing",
+  //     occupation: "Marketing Manager",
+  //     benefits: ["Healthcare", "Performance Incentives", "Remote Work"]
+  //   },
+  //   {
+  //     id: 10,
+  //     title: "Cloud Architect",
+  //     company: "CloudTech Solutions",
+  //     location: "Mumbai",
+  //     state: "Maharashtra",
+  //     type: "Full-time",
+  //     salary: "30-50 LPA",
+  //     department: "Engineering",
+  //     posted: "3 days ago",
+  //     description: "Looking for an experienced cloud architect to design and implement cloud-native solutions.",
+  //     skills: ["AWS", "Azure", "Cloud Architecture", "Microservices", "Security"],
+  //     education: "B.Tech/M.Tech",
+  //     experience: "8-12 years",
+  //     industry: "Technology",
+  //     occupation: "Cloud Architect",
+  //     benefits: ["Health Insurance", "Stock Options", "Remote Work", "Learning Budget"]
+  //   }
+  // ];
   // Filter jobs based on all criteria
   const filteredJobs = jobs.filter(job => {
     const matchesSearch =
@@ -806,15 +840,7 @@ const JobsPage: React.FC = () => {
                     </motion.div>
                   ))}
                 </AnimatePresence>
-                {/* <AnimatePresence>
-                  {showDetails && (
-                    <JobDetailsPopover
-                      isOpen={showDetails}
-                      onClose={() => setShowDetails(false)}
-                      job={job}
-                    />
-                  )}
-                </AnimatePresence> */}
+              
 
                 {/* No Results Message */}
                 {filteredJobs.length === 0 && (

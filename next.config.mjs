@@ -1,37 +1,9 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-    async headers() {
-    return [
-      {
-        source: '/:path*',
-        headers: [
-          {
-            key: 'Content-Security-Policy',
-            value: [
-              "default-src 'self'",
-              "connect-src 'self' https://demploymentcorner.com https://dec-azure.vercel.app",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-              "style-src 'self' 'unsafe-inline'",
-              "form-action 'self'"
-            ].join('; ')
-          },
-          {
-            key: 'Access-Control-Allow-Origin',
-            value: '*'   
-          },
-          {
-            key: 'Access-Control-Allow-Methods',
-            value: 'GET, POST, OPTIONS'
-          },
-          {
-            key: 'Access-Control-Allow-Headers',
-            value: 'Content-Type, Authorization'
-          }
-        ]
-      }
-    ];
+const nextConfig = { 
+  env: {
+    MONGODB_URI: process.env.MONGODB_URI,
+    MONGODB_DB: process.env.MONGODB_DB,
   },
-  output: "export",
   distDir: "out",
     images: {
       unoptimized: true,

@@ -2,51 +2,115 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Phone, Mail, MapPin, Send, CheckCircle } from 'lucide-react';
-import {
-  FaCheckCircle,
-  FaArrowRight,
-  FaPhone,
-  FaGlobe,
-  FaMapMarkerAlt,
-} from "react-icons/fa";
+import toast , { Toaster } from 'react-hot-toast';
+// import { toast, Toaster } from 'sonner';
+
+// Define the initial form state
+const initialFormData = {
+  name: '',
+  phone: '',
+  email: '',
+  subject: '',
+  message: ''
+};
+
+// Form statuses
+const FORM_STATUS = {
+  IDLE: 'idle',
+  SUBMITTING: 'submitting',
+  SUCCESS: 'success',
+  ERROR: 'error'
+};
+
 
 const ContactUs = () => {
   const [preferredContact, setPreferredContact] = useState("");
-  // const [formData, setFormData] = useState({
-  //   name: "",
-  //   email: "",
-  //   phone: "",
-  //   preference: "",
-  //   message: "",
-  // });
-  const [formStatus, setFormStatus] = useState('idle'); // idle, submitting, success
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
-  });
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setFormStatus('submitting');
-    
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setFormStatus('success');
-    
-    // Reset form after 2 seconds
-    setTimeout(() => {
-      setFormStatus('idle');
-      setFormData({ name: '', email: '', subject: '', message: '' });
-    }, 2000);
+   const [formData, setFormData] = useState(initialFormData);
+  const [formStatus, setFormStatus] = useState(FORM_STATUS.IDLE);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: value
+    }));
   };
 
-  const handleChange = (e) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const loadingToast = toast.loading('Sending message...');
+    
+    try {
+      setIsSubmitting(true);
+      validateForm();
+      setFormStatus(FORM_STATUS.SUBMITTING);
+      
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+  
+      const data = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(data.message || 'Something went wrong');
+      }
+  
+      toast.dismiss(loadingToast);
+      toast.success('Message sent successfully!');
+      setFormStatus(FORM_STATUS.SUCCESS);
+      setFormData(initialFormData);
+  
+      setTimeout(() => {
+        setFormStatus(FORM_STATUS.IDLE);
+      }, 3000);
+  
+    } catch (error) {
+      console.error('Form submission error:', error);
+      toast.dismiss(loadingToast);
+      toast.error(error.message || 'Failed to connect to server');
+      setFormStatus(FORM_STATUS.ERROR);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  const validateForm = () => {
+    try {
+      // Basic email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        throw new Error('Please enter a valid email address');
+      }
+
+      // Phone number validation (basic)
+      const phoneRegex = /^\+?[\d\s-]{10,}$/;
+      if (!phoneRegex.test(formData.phone)) {
+        throw new Error('Please enter a valid phone number');
+      }
+
+      // Check for empty required fields
+      for (const [key, value] of Object.entries(formData)) {
+        if (!value.trim()) {
+          throw new Error(`Please fill in the ${key} field`);
+        }
+      }
+    } catch (error) {
+      toast.error(error.message, {
+        duration: 4000,
+        position: 'top-center',
+        style: {
+          background: '#EF4444',
+          color: '#fff',
+          padding: '16px',
+        },
+      });
+      throw error; // Re-throw to be caught by handleSubmit
+    }
   };
 
   const contactInfo = [
@@ -69,6 +133,21 @@ const ContactUs = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+       {/* <Toaster position="top-center" expand={true} richColors /> */}
+       {/* <Toaster /> */}
+       <Toaster
+        position="top-center"
+        reverseOrder={false}
+        toastOptions={{
+          // Default options for all toasts
+          duration: 4000,
+          style: {
+            padding: '16px',
+            borderRadius: '8px',
+          },
+        }}
+      />
+
       {/* Hero Section */}
       <motion.section
         initial={{ opacity: 0 }}
@@ -135,6 +214,20 @@ const ContactUs = () => {
                 />
               </div>
               <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                  Phone
+                </label>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
+                />
+              </div>
+              <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                   Email
                 </label>
@@ -177,208 +270,67 @@ const ContactUs = () => {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
               />
             </div>
-            <motion.button
-              type="submit"
-              disabled={formStatus !== 'idle'}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className={`w-full py-3 px-6 rounded-lg text-white font-medium flex items-center justify-center transition-colors duration-200 ${
-                formStatus === 'success' 
-                  ? 'bg-green-500' 
-                  : formStatus === 'submitting'
-                  ? 'bg-gray-400'
-                  : 'bg-blue-600 hover:bg-blue-700'
-              }`}
+               <motion.button
+        type="submit"
+        disabled={isSubmitting || formStatus !== FORM_STATUS.IDLE}
+        whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
+        whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
+        className={`
+          w-full py-3 px-6 
+          rounded-lg text-white font-medium 
+          flex items-center justify-center 
+          transition-all duration-200
+          disabled:cursor-not-allowed
+          ${
+            formStatus === FORM_STATUS.SUCCESS 
+              ? 'bg-green-500 hover:bg-green-600' 
+              : formStatus === FORM_STATUS.SUBMITTING
+              ? 'bg-gray-400'
+              : formStatus === FORM_STATUS.ERROR
+              ? 'bg-red-500 hover:bg-red-600'
+              : 'bg-blue-600 hover:bg-blue-700'
+          }
+        `}
+      >
+        {formStatus === FORM_STATUS.SUCCESS ? (
+          <div className="flex items-center">
+            <CheckCircle className="w-5 h-5 mr-2" />
+            <span>Sent Successfully</span>
+          </div>
+        ) : formStatus === FORM_STATUS.SUBMITTING ? (
+          <div className="flex items-center">
+            <svg 
+              className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" 
+              xmlns="http://www.w3.org/2000/svg" 
+              fill="none" 
+              viewBox="0 0 24 24"
             >
-              {formStatus === 'success' ? (
-                <>
-                  <CheckCircle className="w-5 h-5 mr-2" />
-                  Sent Successfully
-                </>
-              ) : formStatus === 'submitting' ? (
-                'Sending...'
-              ) : (
-                <>
-                  <Send className="w-5 h-5 mr-2" />
-                  Send Message
-                </>
-              )}
-            </motion.button>
+              <circle 
+                className="opacity-25" 
+                cx="12" 
+                cy="12" 
+                r="10" 
+                stroke="currentColor" 
+                strokeWidth="4"
+              />
+              <path 
+                className="opacity-75" 
+                fill="currentColor" 
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              />
+            </svg>
+            <span>Sending...</span>
+          </div>
+        ) : (
+          <div className="flex items-center">
+            <Send className="w-5 h-5 mr-2" />
+            <span>Send Message</span>
+          </div>
+        )}
+      </motion.button>
           </motion.form>
         </div>
       </section>
-
-      {/* Contact Form Section */}
-      <div className="min-h-screen">
-        <motion.section
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6 }}
-          className="py-24 bg-gradient-to-r from-blue-50 to-indigo-50"
-        >
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="grid lg:grid-cols-2 gap-8 items-center">
-              {/* Left Section */}
-              <motion.div
-                initial={{ x: -50 }}
-                animate={{ x: 0 }}
-                transition={{ duration: 0.6 }}
-                className="relative"
-              >
-                <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-                  {/* <Image
-                    src="/first/contact-banner.jpg"
-                    alt="Contact Us"
-                    width={600}
-                    height={800}
-                    className="w-full h-96 object-cover"
-                  /> */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60" />
-                  <h1 className="absolute top-8 left-8 text-5xl font-bold text-white">
-                    Contact Us
-                  </h1>
-                  <div className="absolute bottom-0 w-full p-8">
-                    <div className="bg-white/95 backdrop-blur-sm rounded-xl p-6 space-y-4">
-                      <a
-                        href="tel:470-601-1911"
-                        className="flex items-center group"
-                      >
-                        <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center group-hover:bg-indigo-200 transition-colors">
-                          <FaPhone className="text-indigo-600" />
-                        </div>
-                        <span className="ml-4 text-gray-800">+(91) 7722965066</span>
-                      </a>
-                      <a
-                        href="https://demploymentcorner.com"
-                        className="flex items-center group"
-                      >
-                        <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center group-hover:bg-indigo-200 transition-colors">
-                          <FaGlobe className="text-indigo-600" />
-                        </div>
-                        <span className="ml-4 text-gray-800">
-                          demploymentcorner.com
-                        </span>
-                      </a>
-                      <div className="flex items-center group">
-                        <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                          <FaMapMarkerAlt className="text-indigo-600" />
-                        </div>
-                        <span className="ml-4 text-gray-800">All India</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Right Section - Form */}
-              <motion.div
-                initial={{ x: 50 }}
-                animate={{ x: 0 }}
-                transition={{ duration: 0.6 }}
-                className="bg-white p-8 rounded-2xl shadow-xl"
-              >
-                <h2 className="text-5xl font-bold text-center mb-8 bg-clip-text text-slate-900">
-                  SEND US A MESSAGE
-                </h2>
-                <form className="space-y-6">
-                  <motion.div
-                    whileHover={{ scale: 1.01 }}
-                    className="space-y-4"
-                  >
-                    <input
-                      type="text"
-                      placeholder="Name"
-                      className="w-full px-6 py-3 rounded-full border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-shadow"
-                    />
-                    <input
-                      type="email"
-                      placeholder="Email"
-                      className="w-full px-6 py-3 rounded-full border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-shadow"
-                    />
-                    <input
-                      type="tel"
-                      placeholder="Phone"
-                      className="w-full px-6 py-3 rounded-full border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-shadow"
-                    />
-                  </motion.div>
-
-                  <div className="space-y-4">
-                    <p className="text-gray-600">
-                      Preferred Method of Communication
-                    </p>
-                    <div className="flex justify-center space-x-8">
-                      <label className="flex items-center space-x-2 cursor-pointer">
-                        <div className="relative">
-                          <input
-                            type="radio"
-                            name="contact"
-                            value="email"
-                            className="hidden"
-                            onChange={(e) =>
-                              setPreferredContact(e.target.value)
-                            }
-                          />
-                          <div
-                            className={`w-5 h-5 border-2 rounded-full ${preferredContact === "email"
-                              ? "border-indigo-600"
-                              : "border-gray-300"
-                              }`}
-                          >
-                            {preferredContact === "email" && (
-                              <div className="absolute inset-1 bg-indigo-600 rounded-full" />
-                            )}
-                          </div>
-                        </div>
-                        <span>Email</span>
-                      </label>
-                      <label className="flex items-center space-x-2 cursor-pointer">
-                        <div className="relative">
-                          <input
-                            type="radio"
-                            name="contact"
-                            value="phone"
-                            className="hidden"
-                            onChange={(e) =>
-                              setPreferredContact(e.target.value)
-                            }
-                          />
-                          <div
-                            className={`w-5 h-5 border-2 rounded-full ${preferredContact === "phone"
-                              ? "border-indigo-600"
-                              : "border-gray-300"
-                              }`}
-                          >
-                            {preferredContact === "phone" && (
-                              <div className="absolute inset-1 bg-indigo-600 rounded-full" />
-                            )}
-                          </div>
-                        </div>
-                        <span>Phone</span>
-                      </label>
-                    </div>
-                  </div>
-
-                  <textarea
-                    placeholder="Message"
-                    rows={4}
-                    className="w-full px-6 py-4 rounded-3xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-shadow"
-                  />
-
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    type="submit"
-                    className="w-full py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
-                  >
-                    Send Message
-                  </motion.button>
-                </form>
-              </motion.div>
-            </div>
-          </div>
-        </motion.section>
-      </div>
-
 
       {/* Map Section */}
       <section className="py-12 bg-gray-50">

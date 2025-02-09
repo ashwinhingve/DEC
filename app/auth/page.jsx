@@ -1,68 +1,158 @@
 'use client';
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import config from './config';
-import { Mail, Lock, User, Eye, EyeOff, Github, ArrowRight } from 'lucide-react';
-// import { useSession, signIn, signOut } from "next-auth/react"
-
+import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion'; 
+import axios from 'axios';
+import { useAuth } from '../../contexts/AuthContext';
+import toast from 'react-hot-toast';
+import { Mail, Lock, User, Eye, EyeOff, Shield, ArrowRight } from 'lucide-react';
 
 const AuthPage = () => {
+  const { setAuth } = useAuth();
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [role, setRole] = useState('user');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     name: '',
+    // role: 'user'
   });
-
   // const handleSubmit = async (e) => {
   //   e.preventDefault();
-  //   // Add your authentication logic here
-  //   console.log('Form submitted:', formData);
-  // };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-    
+  //   // Set initial loading state
+  //   setIsLoading(true);
+  //   setError('');
+
+  //   const validations = {
+  //     email: {
+  //       regex: /^[a-zA-Z0-9._%+-]+@gmail\.com$/,
+  //       message: 'Invalid email. Must be a valid Gmail address'
+  //     },
+  //     password: {
+  //       regex: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+  //       message: 'Password must:\n- Be at least 8 characters\n- Contain letter, number, special character'
+  //     },
+  //     name: {
+  //       minLength: 3,
+  //       maxLength: 20,
+  //       message: 'Name must be 3-20 characters long'
+  //     }
+  //   };
+
   //   try {
-  //     const action = isLogin ? 'login' : 'register';
-  //     const response = await fetch(`http://localhost:3000/auth/auth_api.php?action=${action}`, {
-  //     // const response = await fetch(`http://demploymentcorner.com/auth_api.php?action=${action}`, {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //             'Accept': 'application/json'
-  //       },
-  //       credentials: 'include', 
-  //       body: JSON.stringify(formData)
-  //     });
   
+  //     const action = isLogin ? 'login' : 'register';
+  //     // const apiUrl = 'https://dec-azure.vercel.app/auth_api.php';
+    
+  //     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth_api.php?action=${action}`, {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //         credentials: 'include', // Include cookies if needed
+  //     mode: 'cors', // Enable CORS
+  //       body: JSON.stringify(formData),
+  //     });
+      
+  //  if (!response.ok) {
+  //     throw new Error(`HTTP error! status: ${response.status}`);
+  //   }
+      
   //     const data = await response.json();
       
   //     if (data.success) {
   //       if (isLogin) {
-  //         // Store user data in localStorage or state management system
-  //         localStorage.setItem('user', JSON.stringify(data.user));
-  //         localStorage.setItem('token', data.token); 
-  //         // Redirect to dashboard or home page
-  //         window.location.href = '/admin';
+  //         // localStorage.setItem('user', JSON.stringify(data.user));
+  //         sessionStorage.setItem('user', JSON.stringify(data.user));
+  //         // document.cookie = `user=${JSON.stringify(data.user)}; path=/; max-age=3600`;
+  //         // window.location.href = '/profile';
+  //        document.cookie = `user=${JSON.stringify(data.user)}; path=/; max-age=3600; SameSite=Strict; Secure`;
+  //        router.push('/profile');
+        
+  //     // Input validation
+  //     if (!validations.email.regex.test(formData.email)) {
+  //       throw new Error(validations.email.message);
+  //     }
+
+  //     if (!validations.password.regex.test(formData.password)) {
+  //       throw new Error(validations.password.message);
+  //     }
+
+  //     if (!isLogin && (
+  //       formData.name.trim().length < validations.name.minLength ||
+  //       formData.name.trim().length > validations.name.maxLength
+  //     )) {
+  //       throw new Error(validations.name.message);
+  //     }
+
+  //     // Prepare request data
+  //     const reqData = {
+  //       email: formData.email,
+  //       password: formData.password,
+  //       ...((!isLogin && formData.name) && { name: formData.name })
+  //     };
+
+  //     // Make API request
+  //     const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
+  //     const response = await axios.post(endpoint, reqData);
+
+  //     if (response.data.success) {
+  //       if (isLogin) {
+  //         setAuth({
+  //           user: response.data.user,
+  //           token: response.data.token
+  //         });
+
+  //         toast.success('Login successful!');
+  //         router.push(response.data.user.role === 'admin' ? '/admin' : '/profile');
+ 
   //       } else {
-  //         // Show success message and switch to login
-  //         alert('Registration successful! Please login.');
+  //         // Show registration success
+  //         toast.success('Registration successful! Please login.');
   //         setIsLogin(true);
+
+  //         // Reset form
+  //         setFormData({
+  //           email: '',
+  //           password: '',
+  //           name: ''
+  //         });
   //       }
-  //     } else {
-  //       alert(data.message);
   //     }
   //   } catch (error) {
-  //     console.error('Error:', error);
-  //     alert('An error occurred. Please try again.');
+ 
+  //     console.error('Login error:', error);
+  //     alert(error.message || 'An error occurred while processing your request');
+  //   }
+  // };
+ 
+  //     // Handle different types of errors
+  //     const errorMessage = error.response?.data?.message || error.message || 'An error occurred';
+
+  //     if (error.response?.status === 401) {
+  //       setError('Invalid credentials');
+  //     } else if (error.response?.status === 409) {
+  //       setError('Email already exists');
+  //     } else {
+  //       setError(errorMessage);
+  //     }
+
+  //     // Show error toast
+  //     toast.error(errorMessage);
+  //   } finally {
+  //     setIsLoading(false);
   //   }
   // };
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Validation rules
+    // Set initial loading state
+    setIsLoading(true);
+    setError('');
+    
     const validations = {
       email: {
         regex: /^[a-zA-Z0-9._%+-]+@gmail\.com$/,
@@ -79,63 +169,76 @@ const AuthPage = () => {
       }
     };
   
-    // Email validation
-    if (!validations.email.regex.test(formData.email)) {
-      alert(validations.email.message);
-      return;
-    }
-  
-    // Password validation
-    if (!validations.password.regex.test(formData.password)) {
-      alert(validations.password.message);
-      return;
-    }
-  
-    // Name validation (only during registration)
-    if (!isLogin) {
-      const nameLength = formData.name.trim().length;
-      if (nameLength < validations.name.minLength || nameLength > validations.name.maxLength) {
-        alert(validations.name.message);
-        return;
-      }
-    }
-  
     try {
+      // Input validation
+      if (!validations.email.regex.test(formData.email)) {
+        throw new Error(validations.email.message);
+      }
+      
+      if (!validations.password.regex.test(formData.password)) {
+        throw new Error(validations.password.message);
+      }
+      
+      if (!isLogin && (
+        formData.name.trim().length < validations.name.minLength ||
+        formData.name.trim().length > validations.name.maxLength
+      )) {
+        throw new Error(validations.name.message);
+      }
+  
       const action = isLogin ? 'login' : 'register';
-      // const apiUrl = 'https://dec-azure.vercel.app/auth_api.php';
-    
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth_api.php?action=${action}`, {
+      
+      // Make API request
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}?action=${action}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-          credentials: 'include', // Include cookies if needed
-      mode: 'cors', // Enable CORS
-        body: JSON.stringify(formData),
+        credentials: 'include',
+        mode: 'cors',
+        body: JSON.stringify(formData)
       });
-      
-   if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-      
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
       const data = await response.json();
-      
+  
       if (data.success) {
         if (isLogin) {
-          // localStorage.setItem('user', JSON.stringify(data.user));
           sessionStorage.setItem('user', JSON.stringify(data.user));
-          // document.cookie = `user=${JSON.stringify(data.user)}; path=/; max-age=3600`;
-          // window.location.href = '/profile';
-         document.cookie = `user=${JSON.stringify(data.user)}; path=/; max-age=3600; SameSite=Strict; Secure`;
-         router.push('/profile');
+          document.cookie = `user=${JSON.stringify(data.user)}; path=/; max-age=3600; SameSite=Strict; Secure`;
+          router.push('/profile');
         } else {
-          alert('Registration successful! Please login.');
+          // Show registration success
+          toast.success('Registration successful! Please login.');
           setIsLogin(true);
+          
+          // Reset form
+          setFormData({
+            email: '',
+            password: '',
+            name: ''
+          });
         }
-      } else {
-        alert(data.message || 'An error occurred');
       }
     } catch (error) {
       console.error('Login error:', error);
-      alert(error.message || 'An error occurred while processing your request');
+      
+      // Handle different types of errors
+      const errorMessage = error.response?.data?.message || error.message || 'An error occurred';
+      
+      if (error.response?.status === 401) {
+        setError('Invalid credentials');
+      } else if (error.response?.status === 409) {
+        setError('Email already exists');
+      } else {
+        setError(errorMessage);
+      }
+      
+      // Show error toast
+      toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
  
@@ -148,9 +251,11 @@ const AuthPage = () => {
 
   const toggleAuth = () => {
     setIsLogin(!isLogin);
-    setFormData({ email: '', password: '', name: '' });
+    setFormData({ email: '', password: '', name: '', role: 'user' });
+    setRole('user');
   };
 
+  // Animation variants remain the same
   const pageVariants = {
     initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
@@ -159,8 +264,8 @@ const AuthPage = () => {
 
   const formVariants = {
     hidden: { opacity: 0, x: -20 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       x: 0,
       transition: {
         duration: 0.6,
@@ -171,169 +276,168 @@ const AuthPage = () => {
 
   const itemVariants = {
     hidden: { opacity: 0, x: -20 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       x: 0,
       transition: { duration: 0.3 }
     }
   };
-   // const { data: session } = useSession()
-  // if (session) {
-  //   return (
-  //     <>
-  //       Signed in as {session.user.email} <br />
-  //       <button onClick={() => signOut()}>Sign out</button>
-  //     </>
-  //   )
-  // }
-  // return (
-  //   <>
-  //     Not signed in <br />
-  //     <button onClick={() => signIn()}>Sign in</button>
-  //   </>
-  // )
+
   return (
     <>
-    <div className="h-20 bg-teal-800 w-full"></div>
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-white to-purple-100 flex items-center justify-center p-4">
-      <motion.div
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        variants={pageVariants}
-        className="w-full max-w-md"
-      >
-        {/* Auth Card */}
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          {/* Header */}
-          <div className="p-8 pb-6 text-center bg-gradient-to-r from-[#0891B2] to-[#06B6D4]">
-            <motion.h2 
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-3xl font-bold text-white mb-2"
-            >
-              {isLogin ? 'Welcome Back' : 'Create Account'}
-            </motion.h2>
-            <motion.p 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-blue-100"
-            >
-              {isLogin ? 'Sign in to continue' : 'Sign up to get started'}
-            </motion.p>
-          </div>
-
-          {/* Form */}
-          <motion.form
-            variants={formVariants}
-            initial="hidden"
-            animate="visible"
-            onSubmit={handleSubmit}
-            className="p-8"
-          >
-            {/* Social Login */}
-            {/* <motion.div variants={itemVariants} className="mb-6">
-              <button
-                type="button"
-                className="w-full flex items-center justify-center gap-2 bg-gray-900 text-white rounded-lg p-3 hover:bg-gray-800 transition-colors duration-300"
+      <div className="h-20 bg-teal-800 w-full"></div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-100 via-white to-purple-100 flex items-center justify-center p-4">
+        <motion.div
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          variants={pageVariants}
+          className="w-full max-w-md"
+        >
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <div className="p-8 pb-6 text-center bg-gradient-to-r from-[#0891B2] to-[#06B6D4]">
+              <motion.h2
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-3xl font-bold text-white mb-2"
               >
-                <Github size={20} />
-                Continue with Github
-              </button>
-            </motion.div>  
-            <motion.div variants={itemVariants} className="relative mb-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Or continue with</span>
-              </div>
-            </motion.div> */}
+                {isLogin ? 'Welcome Back' : 'Create Account'}
+              </motion.h2>
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-blue-100"
+              >
+                {isLogin ? 'Sign in to continue' : 'Sign up to get started'}
+              </motion.p>
+            </div>
 
-            {/* Name Field - Only show on signup */}
-            {!isLogin && (
+            <motion.form
+              variants={formVariants}
+              initial="hidden"
+              animate="visible"
+              onSubmit={handleSubmit}
+              className="p-8"
+            >
+              {!isLogin && (
+                <motion.div variants={itemVariants} className="mb-4">
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      placeholder="Full Name"
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    />
+                  </div>
+                </motion.div>
+              )}
+
               <motion.div variants={itemVariants} className="mb-4">
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
                   <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
+                    type="email"
+                    name="email"
+                    value={formData.email}
                     onChange={handleChange}
-                    placeholder="Full Name"
+                    placeholder="Email address"
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     required
                   />
                 </div>
               </motion.div>
-            )}
 
-            {/* Email Field */}
-            <motion.div variants={itemVariants} className="mb-4">
+              <motion.div variants={itemVariants} className="mb-6">
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="Password"
+                    className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
+              </motion.div>
+
+              {/* <motion.div variants={itemVariants} className="mb-6">
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Email address"
+                <Shield className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                <select
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
-                />
+                >
+                  <option value="user">User</option>
+                  <option value="admin">Admin</option>
+                </select>
               </div>
-            </motion.div>
+            </motion.div> */}
 
-            {/* Password Field */}
-            <motion.div variants={itemVariants} className="mb-6">
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Password"
-                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
-                />
+              <motion.div variants={itemVariants}>
+                {/* <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full bg-gradient-to-r from-[#0891B2] via-[#0EA5E9] to-[#38BDF8] text-white rounded-lg p-3 flex items-center justify-center gap-2 hover:opacity-95 transition-opacity duration-300"
+                >
+                  {isLoading ? (
+                    <div className="flex items-center gap-2">
+                      <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                      {isLogin ? 'Signing In...' : 'Creating Account...'}
+                    </div>
+                  ) : (
+                    <>
+                      {isLogin ? 'Sign In' : 'Create Account'}
+                      <ArrowRight size={20} />
+                    </>
+                  )}
+                </button> */}
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full bg-gradient-to-r from-[#0891B2] via-[#0EA5E9] to-[#38BDF8] text-white rounded-lg p-3 flex items-center justify-center gap-2 hover:opacity-95 transition-opacity duration-300"
+                >
+                  {isLoading ? (
+                    <div className="flex items-center gap-2">
+                      <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                      {isLogin ? 'Signing In...' : 'Creating Account...'}
+                    </div>
+                  ) : (
+                    <>
+                      {isLogin ? 'Sign In' : 'Create Account'}
+                      <ArrowRight size={20} />
+                    </>
+                  )}
+                </button>
+              </motion.div>
+
+              <motion.p variants={itemVariants} className="mt-6 text-center text-gray-600">
+                {isLogin ? "Don't have an account? " : "Already have an account? "}
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  onClick={toggleAuth}
+                  className="text-blue-600 hover:underline font-medium"
                 >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  {isLogin ? 'Sign up' : 'Sign in'}
                 </button>
-              </div>
-            </motion.div>
-
-            {/* Submit Button */}
-            <motion.div variants={itemVariants}>
-              <motion.button
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
-                type="submit"
-                className="w-full bg-gradient-to-r from-[#0891B2] via-[#0EA5E9] to-[#38BDF8] text-white rounded-lg p-3 flex items-center justify-center gap-2 hover:opacity-95 transition-opacity duration-300">
-                {isLogin ? 'Sign In' : 'Create Account'}
-                <ArrowRight size={20} />
-              </motion.button>
-            </motion.div>
-
-            {/* Toggle Auth Mode */}
-            <motion.p variants={itemVariants} className="mt-6 text-center text-gray-600">
-              {isLogin ? "Don't have an account? " : "Already have an account? "}
-              <button
-                type="button"
-                onClick={toggleAuth}
-                className="text-blue-600 hover:underline font-medium"
-              >
-                {isLogin ? 'Sign up' : 'Sign in'}
-              </button>
-            </motion.p>
-          </motion.form>
-        </div>
-      </motion.div>
-    </div>
+              </motion.p>
+            </motion.form>
+          </div>
+        </motion.div>
+      </div>
     </>
   );
 };
