@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { authMiddleware } from '@/middleware/authMiddleware';
+import { authMiddleware } from '../../../../middleware/authMiddleware';
 
 async function handler(req) {
   // Both admin and regular users can access this route
@@ -11,30 +11,4 @@ async function handler(req) {
     }
   });
 }
-
-// export const GET = authMiddleware(handler);
-
-
-// // In any protected page component
-// import { useAuth } from '@/contexts/AuthContext';
-// import { useEffect } from 'react';
-// import { useRouter } from 'next/navigation';
-
-// const ProtectedPage = () => {
-//   const { isAuthenticated, user } = useAuth();
-//   const router = useRouter();
-
-//   useEffect(() => {
-//     if (!isAuthenticated) {
-//       router.push('/auth');
-//     }
-//   }, [isAuthenticated]);
-
-//   if (!isAuthenticated) {
-//     return null;
-//   }
-
-//   return (
-//     // Your protected page content
-//   );
-// };
+ 
