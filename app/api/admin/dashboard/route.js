@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { adminMiddleware } from '@/middleware/authMiddleware';
+import { adminMiddleware } from '../../../../middleware/authMiddleware';
 
 async function handler(req) {
   // Only admin can access this route
