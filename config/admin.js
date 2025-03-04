@@ -1,7 +1,9 @@
  
 // config/admin.js
 export const ADMIN_EMAILS = [
-    'your-email@gmail.com',
-    'another-admin@gmail.com'
+    'ashwinhumai@gmail.com',
+    'demploymentcorner@gmail.com',
+    'ashwin.hingave123@gmail.com',
+
   ];
  

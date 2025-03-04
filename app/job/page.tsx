@@ -1,7 +1,7 @@
 
 
 'use client';
-import React, { useState ,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Job } from '../../types/job'
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -15,7 +15,7 @@ import {
   Star,
   Building,
   IndianRupee,
-   X
+  X, Menu
 } from 'lucide-react';
 
 // interface Job {
@@ -41,11 +41,11 @@ import {
 //     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/jobs`, {
 //       cache: 'no-store'
 //     })
-    
+
 //     if (!res.ok) {
 //       throw new Error('Failed to fetch jobs')
 //     }
-    
+
 //     return res.json()
 //   } catch (error) {
 //     console.error('Error:', error)
@@ -196,8 +196,8 @@ const JobDetailsPopover: React.FC<JobDetailsPopoverProps> = ({ isOpen, onClose, 
 };
 
 
-const  JobsPage: React.FC = () => {
-   
+const JobsPage: React.FC = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [filters, setFilters] = useState<FilterState>(initialFilterState);
@@ -235,7 +235,7 @@ const  JobsPage: React.FC = () => {
   }, []);
 
 
-   const handleViewDetails = (job:Job) => {
+  const handleViewDetails = (job: Job) => {
     setSelectedJob(job);
     setShowDetails(true);
   };
@@ -288,7 +288,7 @@ const  JobsPage: React.FC = () => {
     department: [
       "ABP CHANNELS", "AGENCY CHANNEL", "DIRECT CHANNEL", "NPS CHENNAL", "DIRECT BCSS CHANNEL",
       "DIRECT LOYALTY CHANNEL", "DEFENCE CHANNEL", "BANCA CHANNEL", "BANCA OTHER", "BROCA CHANNEL", "VRM CHANNEL",
-       "CREDIT LIFE CHANNEL", "TELE VERTICAL CHANNEL", "BANCA NBFC CHANNEL", "BANCA SFB CHANNEL", "BANCA ALLIANCE", "SMART ACHIVEVER", "FLS PROFILE", "NFLS PROFILE"
+      "CREDIT LIFE CHANNEL", "TELE VERTICAL CHANNEL", "BANCA NBFC CHANNEL", "BANCA SFB CHANNEL", "BANCA ALLIANCE", "SMART ACHIVEVER", "FLS PROFILE", "NFLS PROFILE"
     ],
     salary: [
       "Below 3 LPA", "3-6 LPA", "6-10 LPA", "10-15 LPA",
@@ -312,7 +312,7 @@ const  JobsPage: React.FC = () => {
     ],
     occupation: [
       "SALES DEPARTMENT MANAGER", "BUSINESS DEVELOPMENT MANAGER", "ASSISTANT SALES MANAGER",
-      "SALES MANAGER", "SR. SALES MANAGER", "ASSOCIATE AREA BUSINESS MANAGER","SR. AREA BUSINESS MANAGER","RELATIONSHIP MANAGER"
+      "SALES MANAGER", "SR. SALES MANAGER", "ASSOCIATE AREA BUSINESS MANAGER", "SR. AREA BUSINESS MANAGER", "RELATIONSHIP MANAGER"
     ]
   };
 
@@ -387,6 +387,97 @@ const  JobsPage: React.FC = () => {
   //   </motion.div>
   // );
 
+  const SidebarContent = () => (
+    <div className="bg-white rounded-lg shadow-sm p-6">
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center">
+          <Filter className="w-5 h-5 mr-2" />
+          <h2 className="text-lg font-semibold">Filters</h2>
+        </div>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={handleClearFilters}
+            className="text-sm text-blue-600 hover:text-blue-800"
+          >
+            Clear All
+          </button>
+          <button
+            onClick={() => setIsSidebarOpen(false)}
+            className="lg:hidden"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+
+      {/* Keep your existing FilterSection components */}
+      <FilterSection
+        title="state"
+        options={filterOptions.state}
+        value={filters.state}
+        onChange={(e) => setFilters(prev => ({ ...prev, state: e.target.value }))}
+        icon={MapPin}
+      />
+      
+      <FilterSection
+        title="city"
+        options={filterOptions.city}
+        value={filters.city}
+        onChange={(e) => setFilters(prev => ({ ...prev, city: e.target.value }))}
+        icon={Building2}
+      />
+
+      <FilterSection
+        title="experience"
+        options={filterOptions.experience}
+        value={filters.experience}
+        onChange={(e) => setFilters(prev => ({ ...prev, experience: e.target.value }))}
+        icon={Briefcase}
+      />
+
+      <FilterSection
+        title="education"
+        options={filterOptions.education}
+        value={filters.education}
+        onChange={(e) => setFilters(prev => ({ ...prev, education: e.target.value }))}
+        icon={GraduationCap}
+      />
+
+      <FilterSection
+        title="salary"
+        options={filterOptions.salary}
+        value={filters.salary}
+        onChange={(e) => setFilters(prev => ({ ...prev, salary: e.target.value }))}
+        icon={IndianRupee}
+      />
+
+      <FilterSection
+        title="industry"
+        options={filterOptions.industry}
+        value={filters.industry}
+        onChange={(e) => setFilters(prev => ({ ...prev, industry: e.target.value }))}
+        icon={Building}
+      />
+
+      <FilterSection
+        title="department"
+        options={filterOptions.department}
+        value={filters.department}
+        onChange={(e) => setFilters(prev => ({ ...prev, department: e.target.value }))}
+        icon={Users}
+      />
+
+      <FilterSection
+        title="occupation"
+        options={filterOptions.occupation}
+        value={filters.occupation}
+        onChange={(e) => setFilters(prev => ({ ...prev, occupation: e.target.value }))}
+        icon={Briefcase}
+      />
+      {/* ... Add all other FilterSection components ... */}
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
@@ -438,8 +529,49 @@ const  JobsPage: React.FC = () => {
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            {/* Hamburger Menu Button - Only visible on mobile */}
+            <button
+              onClick={() => setIsSidebarOpen(true)}
+              className="fixed bottom-4 right-4 lg:hidden z-30 bg-blue-600 text-white p-3 rounded-full shadow-lg"
+              aria-label="Open Filters"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+
+            {/* Desktop Sidebar */}
+            <div className="hidden lg:block lg:col-span-1">
+              <SidebarContent />
+            </div>
+
+            {/* Mobile Sidebar with Overlay */}
+            <AnimatePresence>
+              {isSidebarOpen && (
+                <>
+                  {/* Overlay */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 0.5 }}
+                    exit={{ opacity: 0 }}
+                    onClick={() => setIsSidebarOpen(false)}
+                    className="fixed inset-0 bg-black lg:hidden z-40"
+                  />
+
+                  {/* Mobile Sidebar */}
+                  <motion.div
+                    initial={{ x: '100%' }}
+                    animate={{ x: 0 }}
+                    exit={{ x: '100%' }}
+                    transition={{ type: 'tween', duration: 0.3 }}
+                    className="fixed right-0 top-0 h-full w-80 bg-white shadow-xl lg:hidden z-50 overflow-y-auto"
+                  >
+                    <SidebarContent />
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
+
             {/* Filters Sidebar */}
-            <motion.div
+            {/* <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
@@ -523,7 +655,7 @@ const  JobsPage: React.FC = () => {
                   icon={Briefcase}
                 />
               </div>
-            </motion.div>
+            </motion.div> */}
 
             {/* Job Listings */}
             {/* Job Listings Section */}
@@ -657,7 +789,7 @@ const  JobsPage: React.FC = () => {
                     </motion.div>
                   ))}
                 </AnimatePresence>
-              
+
 
                 {/* No Results Message */}
                 {filteredJobs.length === 0 && (

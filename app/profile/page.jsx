@@ -1,10 +1,8 @@
 'use client'
 import React, { useState , useEffect ,useCallback } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { jsPDF } from 'jspdf';
-// import useResumeHandler from '../../useResumeHandler';
 import {
   Upload,
   User,
@@ -27,8 +25,8 @@ const useResumeHandler = (formData, resumeFile) => {
     // Validate personal information
     const { personal } = formData;
     if (!personal.fullName?.trim()) errors.push('Full name is required');
-    if (!personal.email?.trim()) errors.push('Email is required');
-    if (!personal.phone?.trim()) errors.push('Phone number is required');
+    // if (!personal.email?.trim()) errors.push('Email is required');
+    // if (!personal.phone?.trim()) errors.push('Phone number is required');
     
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -58,7 +56,7 @@ const useResumeHandler = (formData, resumeFile) => {
 
     // Validate skills
     if (formData.skills.every(skill => !skill.trim())) {
-      errors.push('At least one skill is required');
+      // errors.push('At least one skill is required');
     }
 
     return errors;
@@ -225,7 +223,7 @@ const useResumeHandler = (formData, resumeFile) => {
 };
 
 const ResumeBuilder = () => {
-  const { isAuthenticated, user, logout } = useAuth();
+  // const { isAuthenticated, user, logout } = useAuth();
   const router = useRouter();
 
   const [activeSection, setActiveSection] = useState('personal');
@@ -324,18 +322,18 @@ const ResumeBuilder = () => {
     }
   }, []);
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/auth');
-    }
-  }, [isAuthenticated, router]);
+  // useEffect(() => {
+  //   if (!isAuthenticated) {
+  //     router.push('/auth');
+  //   }
+  // }, [isAuthenticated, router]);
 
   const { handleSaveResume, isSubmitting, error } = useResumeHandler(formData, resumeFile);
 
 
-  if (!isAuthenticated) {
-    return null;
-  }
+  // if (!isAuthenticated) {
+  //   return null;
+  // }
   return (
     <>
       <div className="h-20 bg-teal-800 w-full"></div>

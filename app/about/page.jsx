@@ -255,26 +255,34 @@ export default function About() {
     </motion.section>
 
     {/* Stats Section */}
-    <section className="py-16 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {stats.map((stat, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.2 }}
-              className="flex flex-col items-center p-6 bg-gray-50 rounded-lg hover:shadow-lg transition-shadow duration-300"
-            >
-              <div className="text-blue-600 mb-4">{stat.icon}</div>
-              <div className="text-3xl font-bold text-gray-900 mb-2">{stat.value}</div>
-              <div className="text-gray-600">{stat.label}</div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
 
+    <section className="py-16 bg-white">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {stats.map((stat, index) => (
+        <motion.div
+          key={index}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 20, scale: 0.9 }}
+          transition={{
+            duration: 0.6,
+            delay: index * 0.3,
+            type: "spring",
+            stiffness: 120,
+          }}
+          whileHover={{ scale: 1.05, rotate: 5 }}
+          whileTap={{ scale: 0.95 }}
+          className="flex flex-col items-center p-6 bg-gray-50 rounded-lg hover:shadow-2xl transition-all duration-300 ease-in-out transform"
+        >
+          <div className="text-blue-600 mb-4 text-4xl">{stat.icon}</div>
+          <div className="text-3xl font-semibold text-gray-900 mb-2">{stat.value}</div>
+          <div className="text-gray-600">{stat.label}</div>
+        </motion.div>
+      ))}
+    </div>
+  </div>
+</section>
       {/* About Section */}
       <motion.section
         initial={{ opacity: 0 }}
@@ -295,7 +303,7 @@ export default function About() {
         <div className="container mx-auto px-6 text-center">
           <h1 className="text-4xl font-extrabold mb-4">About Us</h1>
           <p className="text-lg max-w-2xl mx-auto">
-          Employment Corner was formed in July 2018 and Ranjna Adalak is our MD. She has done her MBA in HR & Finance. Our Firm is indulged in providing complete staffing and recruitment solutions. We help organizations with hiring some of the best and the brightest minds in the country who also are an ideal fit for their culture. 
+          D EMPLOYMENT CORNER PVT LTD was formed in July 2018 and Ranjna Adalak is our MD. She has done her MBA in HR & Finance. Our Firm is indulged in providing complete staffing and recruitment solutions. We help organizations with hiring some of the best and the brightest minds in the country who also are an ideal fit for their culture. 
           </p>
         </div>
       </section>
@@ -393,6 +401,7 @@ export default function About() {
           </div>
         </div>
       </motion.section>
+      
     {/* Mission Section */}
     <motion.section
       initial="hidden"
@@ -426,7 +435,7 @@ export default function About() {
             className="relative overflow-hidden rounded-xl shadow-2xl"
           >
             <motion.img
-              src="/images/mission.jpg"
+              src="/images/t1.jpg"
               alt="Mission"
               className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500"
             />
@@ -451,6 +460,8 @@ export default function About() {
         </div>
       </div>
     </motion.section>
+
+    
      
      {/* our team Leader */}
     {/* <div className="bg-gray-50 py-16">
