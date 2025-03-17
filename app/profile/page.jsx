@@ -641,7 +641,7 @@ const ResumeBuilder = () => {
                       value={formData.personal.fullName}
                       onChange={handlePersonalChange}
                       className="w-full p-2 border rounded"
-                      placeholder="John Doe"
+                      placeholder="name"
                     />
                   </div>
                   <div className="mb-4">
@@ -667,7 +667,7 @@ const ResumeBuilder = () => {
                         value={formData.personal.email}
                         onChange={handlePersonalChange}
                         className="flex-1 p-2 outline-none"
-                        placeholder="john.doe@example.com"
+                        placeholder="name@example.com"
                       />
                     </div>
                   </div>
@@ -701,7 +701,7 @@ const ResumeBuilder = () => {
                         value={formData.personal.website}
                         onChange={handlePersonalChange}
                         className="flex-1 p-2 outline-none"
-                        placeholder="www.johndoe.com"
+                        placeholder="www.demploymentcorner.com"
                       />
                     </div>
                   </div>
@@ -713,7 +713,7 @@ const ResumeBuilder = () => {
                       value={formData.personal.location}
                       onChange={handlePersonalChange}
                       className="w-full p-2 border rounded"
-                      placeholder="New York, NY"
+                      placeholder="New Delhi, IND"
                     />
                   </div>
                   <div className="mb-4">

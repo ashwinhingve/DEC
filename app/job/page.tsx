@@ -15,7 +15,7 @@ import {
   Star,
   Building,
   IndianRupee,
-  X, Menu
+  X, Menu, FolderKanban
 } from 'lucide-react';
 
 // interface Job {
@@ -277,8 +277,14 @@ const JobsPage: React.FC = () => {
   // Enhanced filter options
   const filterOptions = {
     state: [
-      "Andhra Pradesh", "Maharashtra", "Karnataka", "Tamil Nadu", "Delhi",
-      "Uttar Pradesh", "Gujarat", "Telangana", "West Bengal", "Madhya Pradesh"
+      "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+      "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand",
+      "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur",
+      "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab",
+      "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura",
+      "Uttar Pradesh", "Uttarakhand", "West Bengal",
+      "Andaman and Nicobar Islands", "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu",
+      "Delhi", "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"
     ],
     city: [
       "Mumbai", "Bangalore", "Delhi", "Hyderabad", "Chennai",
@@ -291,8 +297,8 @@ const JobsPage: React.FC = () => {
       "CREDIT LIFE CHANNEL", "TELE VERTICAL CHANNEL", "BANCA NBFC CHANNEL", "BANCA SFB CHANNEL", "BANCA ALLIANCE", "SMART ACHIVEVER", "FLS PROFILE", "NFLS PROFILE"
     ],
     salary: [
-      "Below 3 LPA", "3-6 LPA", "6-10 LPA", "10-15 LPA",
-      "15-25 LPA", "25-50 LPA", "Above 50 LPA"
+      "Below 1 LPA", "1-1.5 LPA", "1.5-2.0 LPA", "2-2.5 LPA",
+      "2.5-3.0 LPA", "3.0-3.5 LPA", "3.5-4 LPA", "4-4.5 LPA", "4.5-5.0 LPA", "Above 5 LPA"
     ],
     skills: [
       "JavaScript", "React", "Python", "Java", "Node.js",
@@ -303,7 +309,7 @@ const JobsPage: React.FC = () => {
       "B.Tech", "M.Tech", "BCA", "MCA", "MBA"
     ],
     experience: [
-      "Fresher", "1-3 years", "3-5 years", "5-7 years",
+      "Fresher", "≤ 6 Months", "0.5-1 year", "1-2 years", "2-3 years", "3-5 years",
       "7-10 years", "10+ years"
     ],
     industry: [
@@ -418,7 +424,7 @@ const JobsPage: React.FC = () => {
         onChange={(e) => setFilters(prev => ({ ...prev, state: e.target.value }))}
         icon={MapPin}
       />
-      
+
       <FilterSection
         title="city"
         options={filterOptions.city}
@@ -741,17 +747,23 @@ const JobsPage: React.FC = () => {
                       </div>
 
                       {/* Benefits Section */}
-                      <div className="mb-4">
-                        <h4 className="text-sm font-medium text-gray-700 mb-2">Benefits</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {job.benefits.map((benefit, index) => (
-                            <span
-                              key={index}
-                              className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-sm"
-                            >
-                              {benefit}
-                            </span>
-                          ))}
+                      <div className="mb-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 mr-5">
+                        <div className="flex flex-col">
+                          <h4 className="text-sm font-medium text-gray-700 mb-2">Benefits</h4>
+                          <div className="flex flex-wrap gap-2">
+                            {job.benefits.map((benefit, index) => (
+                              <span
+                                key={index}
+                                className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-sm"
+                              >
+                                {benefit}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="flex items-center text-gray-600">
+                          <FolderKanban className="w-4 h-4 mr-1" />
+                          <span>{job.department}</span>
                         </div>
                       </div>
 

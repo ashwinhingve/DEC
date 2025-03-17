@@ -32,7 +32,7 @@ const StatsCard = ({ title, value, change, icon: Icon }) => (
 );
 
 const AdminDashboard = () => {
-  
+
   const emptyJobTemplate = {
     id: Date.now(),
     title: '',
@@ -42,7 +42,7 @@ const AdminDashboard = () => {
     type: '',
     salary: '',
     department: '',
-    posted: 'Just now',
+    posted: new Date().toLocaleDateString(),
     description: '',
     skills: [],
     education: '',
@@ -64,7 +64,7 @@ const AdminDashboard = () => {
     type: '',
     salary: '',
     department: '',
-    posted: 'Just now',
+    posted: new Date().toLocaleDateString(),
     description: '',
     skills: [],
     education: '',
@@ -105,11 +105,11 @@ const AdminDashboard = () => {
 
     fetchAndValidate();
   }, [isAuthenticated, user, router]);
- 
+
   if (!isAuthenticated || user?.role !== 'admin') {
     return null;
   }
-   
+
   const stats = [
     {
       title: 'Total Jobs',
@@ -162,8 +162,14 @@ const AdminDashboard = () => {
   ];
   const filterOptions = {
     state: [
-      "Andhra Pradesh", "Maharashtra", "Karnataka", "Tamil Nadu", "Delhi",
-      "Uttar Pradesh", "Gujarat", "Telangana", "West Bengal", "Madhya Pradesh"
+      "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+      "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand",
+      "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur",
+      "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab",
+      "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura",
+      "Uttar Pradesh", "Uttarakhand", "West Bengal",
+      "Andaman and Nicobar Islands", "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu",
+      "Delhi", "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"
     ],
     city: [
       "Mumbai", "Bangalore", "Delhi", "Hyderabad", "Chennai",
@@ -176,8 +182,8 @@ const AdminDashboard = () => {
       "CREDIT LIFE CHANNEL", "TELE VERTICAL CHANNEL", "BANCA NBFC CHANNEL", "BANCA SFB CHANNEL", "BANCA ALLIANCE", "SMART ACHIVEVER", "FLS PROFILE", "NFLS PROFILE"
     ],
     salary: [
-      "Below 3 LPA", "3-6 LPA", "6-10 LPA", "10-15 LPA",
-      "15-25 LPA", "25-50 LPA", "Above 50 LPA"
+      "Below 1 LPA", "1-1.5 LPA", "1.5-2.0 LPA", "2-2.5 LPA",
+      "2.5-3.0 LPA", "3.0-3.5 LPA", "3.5-4 LPA", "4-4.5 LPA", "4.5-5.0 LPA", "Above 5 LPA"
     ],
     skills: [
       "JavaScript", "React", "Python", "Java", "Node.js",
@@ -188,7 +194,7 @@ const AdminDashboard = () => {
       "B.Tech", "M.Tech", "BCA", "MCA", "MBA"
     ],
     experience: [
-      "Fresher", "1-3 years", "3-5 years", "5-7 years",
+      "Fresher", "≤ 6 Months", "0.5-1 year", "1-2 years", "2-3 years", "3-5 years",
       "7-10 years", "10+ years"
     ],
     industry: [
@@ -200,7 +206,7 @@ const AdminDashboard = () => {
       "SALES MANAGER", "SR. SALES MANAGER", "ASSOCIATE AREA BUSINESS MANAGER", "SR. AREA BUSINESS MANAGER", "RELATIONSHIP MANAGER"
     ]
   };
- 
+
   const handleSave = async (jobData) => {
     try {
       const url = jobData._id
@@ -268,9 +274,15 @@ const AdminDashboard = () => {
 
   const JobForm = ({ job, onSave, onCancel }) => {
     const [formData, setFormData] = useState(job);
+    const [isCustomDepartment, setIsCustomDepartment] = useState(false);
+    const [customDepartment, setCustomDepartment] = useState('');
 
     const handleChange = (e) => {
       const { name, value } = e.target;
+      if (name === 'department' && value === 'custom') {
+        setIsCustomDepartment(true);
+        return;
+      }
       setFormData(prev => ({
         ...prev,
         [name]: value
@@ -389,7 +401,7 @@ const AdminDashboard = () => {
             </select>
           </div>
 
-          <div>
+          {/* <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Department
             </label>
@@ -404,6 +416,70 @@ const AdminDashboard = () => {
                 <option key={dept} value={dept}>{dept}</option>
               ))}
             </select>
+          </div> */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Department
+            </label>
+            {!isCustomDepartment ? (
+              <div className="flex gap-2">
+                <select
+                  name="department"
+                  value={formData.department}
+                  onChange={handleChange}
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                >
+                  <option value="">Select Department</option>
+                  {filterOptions.department.map(dept => (
+                    <option key={dept} value={dept}>{dept}</option>
+                  ))}
+                  <option value="custom">+ Add Custom</option>
+                </select>
+                <button
+                  type="button"
+                  onClick={() => setIsCustomDepartment(true)}
+                  className="px-3 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+                >
+                  Custom
+                </button>
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={customDepartment}
+                  onChange={(e) => setCustomDepartment(e.target.value)}
+                  placeholder="Enter custom department"
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (customDepartment.trim()) {
+                      setFormData(prev => ({
+                        ...prev,
+                        department: customDepartment.trim()
+                      }));
+                      setCustomDepartment('');
+                      setIsCustomDepartment(false);
+                    }
+                  }}
+                  className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                >
+                  Add
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsCustomDepartment(false);
+                    setCustomDepartment('');
+                  }}
+                  className="px-3 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
           </div>
 
           <div>
@@ -419,6 +495,23 @@ const AdminDashboard = () => {
               <option value="">Select Experience</option>
               {filterOptions.experience.map(exp => (
                 <option key={exp} value={exp}>{exp}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Education
+            </label>
+            <select
+              name="education"
+              value={formData.education}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md"
+            >
+              <option value="">Select Education</option>
+              {filterOptions.education.map(edu => (
+                <option key={edu} value={edu}>{edu}</option>
               ))}
             </select>
           </div>
