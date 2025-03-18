@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { motion } from "framer-motion";
+import Photo from "./photo"
 import { jsPDF } from 'jspdf';
 import {
   Upload,
@@ -1110,97 +1111,7 @@ const ResumeBuilder = () => {
                           </motion.label>
                         </div>
                       </div> */}
-                      <div className="mb-4">
-                        <label className="block text-gray-700 mb-2 font-medium">Profile Photo</label>
-                        {isCameraActive ? (
-                          <div className="relative mb-4">
-                            {/* <video
-                              ref={videoRef}
-                              autoPlay
-                              className="w-full max-w-full h-auto md:h-64 bg-gray-800 rounded-lg object-cover"
-                            /> */}
-                            <video
-                              ref={videoRef}
-                              autoPlay
-                              playsInline // Important for iOS
-                              muted // Some browsers require muted for autoplay
-                              className="w-full max-w-md h-64 bg-gray-800 rounded-lg object-cover"
-                              onLoadedMetadata={() => {
-                                // Ensure video plays once metadata is loaded
-                                if (videoRef.current) {
-                                  videoRef.current.play().catch(e => console.error("Video play error:", e));
-                                }
-                              }}
-                            />
-
-                            <div className="flex flex-col sm:flex-row mt-2 space-y-2 sm:space-y-0 sm:space-x-2">
-                              <motion.button
-                                type="button"
-                                className="bg-blue-600 w-full sm:w-auto text-white py-2 px-4 rounded-lg flex items-center justify-center"
-                                whileHover={{ scale: 1.03 }}
-                                whileTap={{ scale: 0.98 }}
-                                onClick={capturePhoto}
-                              >
-                                <Camera size={16} className="mr-2" />
-                                Take Photo
-                              </motion.button>
-
-                              <motion.button
-                                type="button"
-                                className="bg-gray-600 w-full sm:w-auto text-white py-2 px-4 rounded-lg flex items-center justify-center"
-                                whileHover={{ scale: 1.03 }}
-                                whileTap={{ scale: 0.98 }}
-                                onClick={stopCamera}
-                              >
-                                <X size={16} className="mr-2" />
-                                Cancel
-                              </motion.button>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
-                            <motion.div
-                              className="w-20 h-20 bg-gray-200 rounded-full overflow-hidden flex items-center justify-center border-2 border-gray-300 shadow-md"
-                              whileHover={{ scale: 1.05, borderColor: '#3b82f6' }}
-                              transition={{ duration: 0.2 }}
-                            >
-                              {photoPreview ? (
-                                <img src={photoPreview} alt="Profile" className="w-full h-full object-cover" />
-                              ) : (
-                                <User size={40} className="text-gray-400" />
-                              )}
-                            </motion.div>
-
-                            <div className="flex flex-col w-full sm:w-auto sm:flex-row gap-2">
-                              <motion.label
-                                className="cursor-pointer w-full sm:w-auto bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 text-gray-700 py-2 px-4 rounded-lg flex items-center justify-center border border-gray-300 shadow-sm"
-                                whileHover={{ scale: 1.03 }}
-                                whileTap={{ scale: 0.98 }}
-                              >
-                                <ImageIcon size={16} className="mr-2 text-blue-600" />
-                                Upload Photo
-                                <input
-                                  type="file"
-                                  accept="image/*"
-                                  onChange={handlePhotoUpload}
-                                  className="hidden"
-                                />
-                              </motion.label>
-
-                              <motion.button
-                                type="button"
-                                className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-2 px-4 rounded-lg flex items-center justify-center shadow-sm"
-                                whileHover={{ scale: 1.03 }}
-                                whileTap={{ scale: 0.98 }}
-                                onClick={startCamera}
-                              >
-                                <Camera size={16} className="mr-2" />
-                                Use Camera
-                              </motion.button>
-                            </div>
-                          </div>
-                        )}
-                      </div>
+                      <Photo />
                     </div>
                   </div>
                   <div className="mb-4 group">
