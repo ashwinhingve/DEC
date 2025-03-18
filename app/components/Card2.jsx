@@ -31,8 +31,8 @@ const page2 = () => {
   
     return (
       <>
-        <section className="flex justify-center items-center bg-gradient-to-br from-gray-100 to-gray-100 text-gray-950">
-      <div className="container mx-auto md:px-6">
+        <section className="flex rounded-2xl justify-center items-center bg-gradient-to-br from-gray-100 to-gray-100 text-gray-950">
+      <div className="container mx-auto  w-full md:px-6">
         
         <Swiper
           modules={[Pagination, Autoplay]} // Add Autoplay here

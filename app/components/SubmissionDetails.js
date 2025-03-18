@@ -1,10 +1,36 @@
 // components/SubmissionDetails.js
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X } from 'lucide-react';
+import { X, Trash2, AlertCircle } from 'lucide-react';
 
-export default function SubmissionDetails({ submission, onClose }) {
+export default function SubmissionDetails({ submission, onClose, onDelete }) {
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  
   if (!submission) return null;
+
+  const handleDelete = async () => {
+    try {
+      setIsDeleting(true);
+      const response = await fetch(`/api/submissions/${submission._id}`, {
+        method: 'DELETE',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to delete submission');
+      }
+      
+      // If deletion was successful, notify the parent component
+      onDelete(submission._id);
+      onClose();
+    } catch (error) {
+      console.error('Error deleting submission:', error);
+      alert('Failed to delete submission: ' + error.message);
+    } finally {
+      setIsDeleting(false);
+      setShowConfirmDelete(false);
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -31,6 +57,43 @@ export default function SubmissionDetails({ submission, onClose }) {
           </div>
           
           <div className="p-6">
+            {/* Delete Confirmation */}
+            {showConfirmDelete && (
+              <div className="mb-6 bg-red-50 p-4 rounded-lg border border-red-200">
+                <div className="flex items-center mb-2">
+                  <AlertCircle className="text-red-500 mr-2" size={20} />
+                  <h4 className="font-medium text-red-700">Confirm Deletion</h4>
+                </div>
+                <p className="text-red-600 mb-4">Are you sure you want to delete this submission? This action cannot be undone.</p>
+                <div className="flex justify-end space-x-3">
+                  <button 
+                    onClick={() => setShowConfirmDelete(false)}
+                    className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
+                    disabled={isDeleting}
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    onClick={handleDelete}
+                    className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center"
+                    disabled={isDeleting}
+                  >
+                    {isDeleting ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Deleting...
+                      </>
+                    ) : (
+                      'Delete'
+                    )}
+                  </button>
+                </div>
+              </div>
+            )}
+            
             <div className="mb-6">
               <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                 submission.contactType === 'recruiter' 
@@ -87,7 +150,15 @@ export default function SubmissionDetails({ submission, onClose }) {
               </div>
             </div>
             
-            <div className="flex justify-end">
+            <div className="flex justify-between">
+              <button 
+                onClick={() => setShowConfirmDelete(true)}
+                className="px-4 py-2 bg-red-50 text-red-600 rounded-md hover:bg-red-100 transition-colors flex items-center"
+                disabled={isDeleting}
+              >
+                <Trash2 className="mr-2" size={16} />
+                Delete
+              </button>
               <button 
                 onClick={onClose}
                 className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"

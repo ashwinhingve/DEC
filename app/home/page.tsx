@@ -712,7 +712,7 @@ const page = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="bg-white rounded-2xl p-8 min-h-96 shadow-xl border border-indigo-50"
+            className="bg-white rounded-2xl p-4 md:p-8 min-h-96 shadow-xl border border-indigo-50"
           >
             {renderTabContent()}
           </motion.div>
@@ -1300,115 +1300,115 @@ const page = () => {
           </div>
         </motion.div>
 
-        <div className="relative overflow-hidden max-w-6xl mx-auto">
-          <Swiper
-            modules={[Navigation, Pagination, Autoplay]}
-            spaceBetween={30}
-            slidesPerView={1}
-            pagination={{
-              clickable: true,
-              bulletClass: 'swiper-pagination-bullet !bg-white/30 !w-2 !h-2',
-              bulletActiveClass: 'swiper-pagination-bullet-active !bg-white'
-            }}
-            autoplay={{
-              delay: 3500,
-              disableOnInteraction: false,
-            }}
-            breakpoints={{
-              640: { slidesPerView: 1 },
-              768: { slidesPerView: 2 },
-              1024: { slidesPerView: 3 },
-            }}
-            className="max-w-6xl mx-auto"
-          >
-            {reviews.map((review, index) => (
-              <SwiperSlide key={index}>
+        <div className="relative overflow-hidden max-w-6xl mx-auto px-4 sm:px-6">
+  <Swiper
+    modules={[Navigation, Pagination, Autoplay]}
+    spaceBetween={20}
+    slidesPerView={1}
+    pagination={{
+      clickable: true,
+      bulletClass: 'swiper-pagination-bullet !bg-white/30 !w-1.5 !h-1.5 sm:!w-2 sm:!h-2',
+      bulletActiveClass: 'swiper-pagination-bullet-active !bg-white'
+    }}
+    autoplay={{
+      delay: 3500,
+      disableOnInteraction: false,
+    }}
+    breakpoints={{
+      640: { slidesPerView: 1, spaceBetween: 20 },
+      768: { slidesPerView: 2, spaceBetween: 24 },
+      1024: { slidesPerView: 3, spaceBetween: 30 },
+    }}
+    className="max-w-6xl mx-auto"
+  >
+    {reviews.map((review, index) => (
+      <SwiperSlide key={index}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: index * 0.1 }}
+          className="bg-white/10 backdrop-blur-sm rounded-xl p-4 sm:p-6 md:p-8 hover:shadow-xl transition-shadow duration-300 flex flex-col h-full"
+        >
+          <div className="flex flex-col items-center">
+            <div className="relative mb-4 sm:mb-6">
+              <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-blue-500 rounded-full blur-[2px]" />
+              <div className="relative">
+                <Image
+                  src={review.avatar}
+                  alt={`${review.author}'s avatar`}
+                  width={60}
+                  height={60}
+                  className="rounded-full object-cover border-2 sm:border-4 border-white/20 shadow-lg w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20"
+                />
+              </div>
+            </div>
+
+            <h3 className="text-base sm:text-lg md:text-xl font-semibold text-white mb-0.5 sm:mb-1">
+              {review.author}
+            </h3>
+            <p className="text-xs sm:text-sm text-white/70 mb-2 sm:mb-4">
+              {review.date}
+            </p>
+
+            {/* Rating stars with animation */}
+            <div className="flex items-center justify-center mb-3 sm:mb-6">
+              {[...Array(5)].map((_, i) => (
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className="bg-white/10 backdrop-blur-sm rounded-xl p-8 hover:shadow-xl transition-shadow duration-300 flex flex-col h-full"
+                  key={i}
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: i * 0.1, duration: 0.3 }}
                 >
-                  <div className="flex flex-col items-center">
-                    <div className="relative mb-6">
-                      <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-blue-500 rounded-full blur-[2px]" />
-                      <div className="relative">
-                        <Image
-                          src={review.avatar}
-                          alt={`${review.author}'s avatar`}
-                          width={80}
-                          height={80}
-                          className="rounded-full object-cover border-4 border-white/20 shadow-lg"
-                        />
-                      </div>
-                    </div>
-
-                    <h3 className="text-xl font-semibold text-white mb-1">
-                      {review.author}
-                    </h3>
-                    <p className="text-sm text-white/70 mb-4">
-                      {review.date}
-                    </p>
-
-                    {/* Rating stars with animation */}
-                    <div className="flex items-center justify-center mb-6">
-                      {[...Array(5)].map((_, i) => (
-                        <motion.div
-                          key={i}
-                          initial={{ opacity: 0, scale: 0 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ delay: i * 0.1, duration: 0.3 }}
-                        >
-                          <FaStar
-                            className={`w-5 h-5 ${i < review.rating 
-                              ? "text-orange-400" 
-                              : "text-white/30"
-                            }`}
-                          />
-                        </motion.div>
-                      ))}
-                    </div>
-
-                    {/* Quote */}
-                    <blockquote className="text-lg font-serif text-white/90 italic leading-relaxed flex-grow">
-                      {review.text}
-                    </blockquote>
-                    
-                    <div className="mt-4 pt-3 border-t border-white/10 w-full">
-                      <div className="flex items-center justify-center">
-                        <Image
-                          src="/images/go.webp" 
-                          alt="Google logo" 
-                          width={20}
-                          height={20}
-                          className="w-5 h-5 mr-2" 
-                        />
-                        <span className="text-xs text-white/70">Posted on Google</span>
-                      </div>
-                    </div>
-                  </div>
+                  <FaStar
+                    className={`w-4 h-4 sm:w-5 sm:h-5 ${i < review.rating 
+                      ? "text-orange-400" 
+                      : "text-white/30"
+                    }`}
+                  />
                 </motion.div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
-          
-          {/* Navigation controls */}
-          <button 
-            onClick={prevSlide}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 bg-white/20 hover:bg-white/30 p-3 rounded-full backdrop-blur-sm transition-colors focus:outline-none focus:ring-2 focus:ring-white/50"
-            aria-label="Previous reviews"
-          >
-            <ChevronLeft size={24} className="text-white" />
-          </button>
-          
-          <button 
-            onClick={nextSlide}
-            className="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 bg-white/20 hover:bg-white/30 p-3 rounded-full backdrop-blur-sm transition-colors focus:outline-none focus:ring-2 focus:ring-white/50"
-            aria-label="Next reviews"
-          >
-            <ChevronRight size={24} className="text-white" />
-          </button>
-        </div>
+              ))}
+            </div>
+
+            {/* Quote */}
+            <blockquote className="text-sm sm:text-base md:text-lg font-serif text-white/90 italic leading-relaxed flex-grow line-clamp-4 sm:line-clamp-none">
+              {review.text}
+            </blockquote>
+            
+            <div className="mt-3 sm:mt-4 pt-2 sm:pt-3 border-t border-white/10 w-full">
+              <div className="flex items-center justify-center">
+                <Image
+                  src="/images/go.webp" 
+                  alt="Google logo" 
+                  width={16}
+                  height={16}
+                  className="w-4 h-4 sm:w-5 sm:h-5 mr-2" 
+                />
+                <span className="text-xs text-white/70">Posted on Google</span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </SwiperSlide>
+    ))}
+  </Swiper>
+  
+  {/* Navigation controls - hidden on small screens */}
+  <button 
+    onClick={prevSlide}
+    className="hidden sm:block absolute left-0 top-1/2 -translate-y-1/2 -ml-2 sm:-ml-4 bg-white/20 hover:bg-white/30 p-2 sm:p-3 rounded-full backdrop-blur-sm transition-colors focus:outline-none focus:ring-2 focus:ring-white/50"
+    aria-label="Previous reviews"
+  >
+    <ChevronLeft size={20} className="text-white" />
+  </button>
+  
+  <button 
+    onClick={nextSlide}
+    className="hidden sm:block absolute right-0 top-1/2 -translate-y-1/2 -mr-2 sm:-mr-4 bg-white/20 hover:bg-white/30 p-2 sm:p-3 rounded-full backdrop-blur-sm transition-colors focus:outline-none focus:ring-2 focus:ring-white/50"
+    aria-label="Next reviews"
+  >
+    <ChevronRight size={20} className="text-white" />
+  </button>
+</div>
         
         {/* Pagination dots */}
         <div className="flex justify-center mt-8 gap-2">

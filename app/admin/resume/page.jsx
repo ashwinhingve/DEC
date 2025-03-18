@@ -105,6 +105,7 @@ const AdminDashboard = () => {
       return (
         personalInfo.fullName?.toLowerCase().includes(searchLower) ||
         personalInfo.email?.toLowerCase().includes(searchLower) ||
+        personalInfo.phone?.toLowerCase().includes(searchLower) ||
         personalInfo.jobTitle?.toLowerCase().includes(searchLower)
       );
     });
@@ -206,6 +207,9 @@ const AdminDashboard = () => {
                       Email
                     </th>
                     <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Phone no.
+                    </th>
+                    <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Job Title
                     </th>
                     <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -227,6 +231,11 @@ const AdminDashboard = () => {
                       <td className="py-4 px-4 whitespace-nowrap">
                         <div className="text-sm text-gray-500">
                           {resume.userData?.personal?.email || 'N/A'}
+                        </div>
+                      </td>
+                      <td className="py-4 px-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-500">
+                          {resume.userData?.personal?.phone || 'N/A'}
                         </div>
                       </td>
                       <td className="py-4 px-4 whitespace-nowrap">
