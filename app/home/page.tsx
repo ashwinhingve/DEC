@@ -92,51 +92,67 @@ const page = () => {
   const reviews = [
     {
       id: 1,
-      author: "Bhumi Parmar",
+      author: "Raj Sikarwar",
       date: "March 5, 2025",
       rating: 5,
-      text: "Absolutely amazing service! The team went above and beyond to help with our recruitment needs. Would highly recommend to anyone looking for top talent.",
-      avatar: "/first/images.png"
+      text: "The best partner in Life insurance sectors in all india.",
+      avatar: "/first/r.png"
     },
     {
       id: 2,
-      author: "PURCHASE DPJ",
+      author: "Muskan Chouhan",
       date: "February 28, 2025",
       rating: 5,
-      text: "Professional, responsive, and incredibly effective. We found the perfect candidate within weeks thanks to their expertise.",
-      avatar: "/first/unnamed3.png"
+      text: "Good & Great Consultancy. ",
+      avatar: "/first/m.png"
     },
     {
       id: 3,
-      author: "Ajay kumar",
+      author: "HR KIRAN",
       date: "February 15, 2025",
-      rating: 4,
+      rating: 5,
       text: "Great communication throughout the entire process. They really understood our company culture and found candidates who aligned with our values.",
-      avatar: "/first/unnamed4.png"
+      avatar: "/first/hr.png"
     },
     {
       id: 4,
-      author: "Bhumi Parmar",
+      author: "Anchal Kumawat",
       date: "January 30, 2025",
       rating: 5,
-      text: "We've tried several recruitment agencies before, but none compare to the quality of service we received here. Our new hire has been a perfect fit.",
-      avatar: "/first/unnamed2.png"
+      text: "It is a very good platform for learning , It provides good opportunities for team and facilities , Very Helpful and great Experience 👍👍",
+      avatar: "/first/unnamed4.png"
     },
     {
       id: 5,
-      author: "KHUSHYAL BHIKON",
+      author: "poonam koshe",
       date: "January 22, 2025",
       rating: 5,
-      text: "Transparent process, excellent candidates, and stellar results. I couldn't be happier with our experience.",
-      avatar: "/first/unnamed1.png"
+      text: "Excellent 👌 sarvice …",
+      avatar: "/first/unnamed3.png"
     },
     {
       id: 6,
-      author: "Jyotika Rawat",
+      author: "Sonam Sen",
       date: "January 10, 2025",
-      rating: 4,
-      text: "Very impressed with their industry knowledge and the caliber of candidates they introduced us to. Will definitely use their services again.",
-      avatar: "/first/unnamed.png"
+      rating: 5,
+      text: "Good service 👍 …",
+      avatar: "/first/s.png"
+    },
+    {
+      id: 7,
+      author: "HRADITYA EC",
+      date: "January 10, 2025",
+      rating: 5,
+      text: "Good Placement Services",
+      avatar: "/first/hrk.png"
+    },
+    {
+      id: 8,
+      author: "HR AARTI",
+      date: "January 10, 2025",
+      rating: 5,
+      text: "good services",
+      avatar: "/first/hra.png"
     }
   ];
 
