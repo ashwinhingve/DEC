@@ -673,7 +673,7 @@ const JobsPage: React.FC = () => {
                 className="space-y-6"
               >
                 <AnimatePresence>
-                  {filteredJobs.map(job => (
+                  {filteredJobs.slice().reverse().map(job => (
                     <motion.div
                       key={job.id}
                       variants={itemVariants}

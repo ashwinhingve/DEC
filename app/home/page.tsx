@@ -233,6 +233,7 @@ const page = () => {
   ];
 
   const [activeTab, setActiveTab] = useState("Card1");
+ 
   const stories = [
     {
       id: 1,
@@ -265,6 +266,7 @@ const page = () => {
       alt: "Business growth success",
     },
   ];
+  
   const executives = [
     {
       name: "Ranjna Adalak",
