@@ -10,7 +10,6 @@
     "seed": "node scripts/seed-stories.js && node scripts/seed-team-members.js"
   },
   "dependencies": {
-    "@auth/mongodb-adapter": "^3.7.4",
     "@radix-ui/react-slot": "^1.1.1",
     "axios": "^1.7.9",
     "bcryptjs": "^2.4.3",
@@ -29,7 +28,6 @@
     "mongoose": "^8.10.0",
     "mysql2": "^3.12.0",
     "next": "15.1.4",
-    "next-auth": "^4.24.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hot-toast": "^2.5.1",
